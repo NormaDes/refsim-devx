@@ -937,11 +937,11 @@ async function guardarExamenEnNube(aciertos, total, porcentaje, segundos, detall
 
         const nuevoExamen = {
             fecha: new Date().toISOString(),
-            aciertos,
-            total,
-            porcentaje,
-            tiempoSegundos: segundos,
-            detalle
+            aciertos: Number(aciertos),
+            total: Number(total),
+            porcentaje: Number(porcentaje),
+            tiempoSegundos: Number(segundos),
+            detalle: Array.isArray(detalle) ? detalle : []
         };
 
         historialExistente.push(nuevoExamen);
@@ -950,7 +950,7 @@ async function guardarExamenEnNube(aciertos, total, porcentaje, segundos, detall
             historialExamenes: historialExistente 
         }, { merge: true });
 
-        console.log("Examen guardado correctamente en la nube.");
+        console.log("¡Examen guardado correctamente en la nube!");
     } catch (e) {
         console.error("Error al guardar historial en Firebase:", e);
     }
