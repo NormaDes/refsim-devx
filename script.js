@@ -1145,6 +1145,7 @@ function aplicarTraducciones() {
     const varText = document.querySelector('.monitor__bar span:last-child');
     if (varText) varText.textContent = t.varRepeticion;
 
+    // Traducir los botones de decisión del panel
     const botonesOpcion = document.querySelectorAll('.btn-opcion');
     if (botonesOpcion.length >= 8) {
         botonesOpcion[0].innerHTML = `<span class="decision__glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12.5L10 17.5L19 6.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span> ${t.btnNoFalta}`;
@@ -1159,6 +1160,41 @@ function aplicarTraducciones() {
 
     const btnSig = document.getElementById('btn-nueva-situacion');
     if (btnSig) btnSig.textContent = t.btnSiguiente;
+
+    // Traducir la jugada que esté activa en pantalla en ese momento
+    if (situacionActual) {
+        const tituloSituacion = document.getElementById('situacion-titulo');
+        const descripcionSituacion = document.getElementById('situacion-descripcion');
+        if (tituloSituacion) {
+            tituloSituacion.textContent = (idiomaActual === 'eu' && situacionActual.tipoEu) ? situacionActual.tipoEu : situacionActual.tipo;
+        }
+        if (descripcionSituacion) {
+            descripcionSituacion.textContent = (idiomaActual === 'eu' && situacionActual.descripcionEu) ? situacionActual.descripcionEu : situacionActual.descripcion;
+        }
+
+        const idSituacion = document.getElementById('situacion-id');
+        if (idSituacion) {
+            idSituacion.textContent = tipoModoJuego === "examen" 
+                ? (idiomaActual === 'eu' ? `Azterketa [${indiceExamenActual + 1}/${preguntasExamen.length}]` : `Examen [${indiceExamenActual + 1}/${preguntasExamen.length}]`)
+                : `${t.jugada} #${situacionActual.id}`;
+        }
+    }
+
+    // Traducir la barra superior de modos si está creada
+    const btnPracticaEl = document.getElementById('modo-btn-practica');
+    const btnExamenEl = document.getElementById('modo-btn-examen');
+    const btnHistorialEl = document.getElementById('btn-abrir-historial-global');
+    
+    if (btnPracticaEl) btnPracticaEl.textContent = idiomaActual === 'eu' ? 'Praktika Modua' : 'Modo Práctica';
+    if (btnExamenEl) btnExamenEl.textContent = idiomaActual === 'eu' ? 'Azterketa Ofiziala (25)' : 'Examen Oficial (25)';
+    if (btnHistorialEl) btnHistorialEl.textContent = idiomaActual === 'eu' ? '📂 Nire Azterketak' : '📂 Mis Exámenes';
+
+    // Marcar visualmente la bandera activa
+    document.querySelectorAll('#selector-idioma button').forEach(b => {
+        const activo = b.getAttribute('data-lang') === idiomaActual;
+        b.classList.toggle('is-activo', activo);
+        b.setAttribute('aria-pressed', activo ? 'true' : 'false');
+    });
 
     document.documentElement.lang = idiomaActual;
 }
