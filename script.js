@@ -7,11 +7,16 @@ let marcadorActual = null;
 let usuarioFirebaseActual = null;
 let usuarioState = { puntos: 0, aciertos: 0, totalJugadas: 0, racha: 0, maxRacha: 0 };
 
-// Variables de Control para el Modo Examen y Revisión
-let modoExamenActivo = false;
+// Variables para el control de Modos (Práctica vs Examen Oficial)
+let tipoModoJuego = "practica"; // "practica" o "examen"
+let indicesDisponibles = []; 
+
+// Variables específicas del Modo Examen
 let preguntasExamen = [];
 let indiceExamenActual = 0;
-let historialExamen = [];
+let historialExamenActual = [];
+let tiempoExamenSegundos = 0;
+let timerInterval = null;
 
 // Lienzo de referencia de las coordenadas posX / posY de la base de datos.
 const CAMPO_REF = { ancho: 760, alto: 450 };
@@ -123,8 +128,6 @@ function t() {
 // ==========================================
 // 1. BASE DE DATOS DE SITUACIONES (IFAB - 50 Jugadas)
 // ==========================================
-let indicesDisponibles = []; 
-
 const situacionesDB = [
     {
         id: 1,
@@ -729,7 +732,7 @@ const situacionesDB = [
 ];
 
 // ==========================================
-// 3. LÓGICA DEL JUEGO Y MODO EXAMEN
+// 2. LÓGICA DE SELECCIÓN DE JUGADA
 // ==========================================
 function cargarNuevaSituacion() {
     if (marcadorActual) {
@@ -749,15 +752,15 @@ function cargarNuevaSituacion() {
         btn.classList.remove('es-correcta', 'es-elegida-fallo');
     });
 
-    if (situacionesDB.length === 0) return;
-
-    if (modoExamenActivo) {
+    if (tipoModoJuego === "examen") {
+        // --- MODO EXAMEN OFICIAL ---
         if (indiceExamenActual >= preguntasExamen.length) {
-            finalizarExamen();
+            finalizarExamenOficial();
             return;
         }
         situacionActual = preguntasExamen[indiceExamenActual];
     } else {
+        // --- MODO PRÁCTICA LIBRE ---
         if (indicesDisponibles.length === 0) {
             indicesDisponibles = Array.from({ length: situacionesDB.length }, (_, i) => i);
             for (let i = indicesDisponibles.length - 1; i > 0; i--) {
@@ -773,7 +776,7 @@ function cargarNuevaSituacion() {
     const tituloSituacion = document.getElementById('situacion-titulo');
     const descripcionSituacion = document.getElementById('situacion-descripcion');
 
-    const prefixNum = modoExamenActivo ? `Examen [${indiceExamenActual + 1}/${preguntasExamen.length}]` : `${t().jugada} #${situacionActual.id}`;
+    const prefixNum = tipoModoJuego === "examen" ? `Examen Oficial [${indiceExamenActual + 1}/${preguntasExamen.length}]` : `${t().jugada} #${situacionActual.id}`;
     if (idSituacion) idSituacion.textContent = prefixNum;
     
     if (tituloSituacion) {
@@ -803,11 +806,25 @@ function evaluarDecision(event) {
     const decisionElegida = event.currentTarget.getAttribute('data-decision');
     const txt = t();
     const botonesOpcion = document.querySelectorAll('.btn-opcion');
-    
-    const panelFeedback = document.getElementById('panel-feedback');
-    const resultadoFeedback = document.getElementById('feedback-resultado');
-    const explicacionFeedback = document.getElementById('feedback-explicacion');
+    const esAcierto = (decisionElegida.trim() === situacionActual.decisionCorrecta.trim());
 
+    if (tipoModoJuego === "examen") {
+        // --- EN MODO EXAMEN: No mostramos feedback inmediato, guardamos y avanzamos ---
+        historialExamenActual.push({
+            id: situacionActual.id,
+            enunciado: (idiomaActual === 'eu' && situacionActual.tipoEu) ? situacionActual.tipoEu : situacionActual.tipo,
+            tuRespuesta: decisionElegida,
+            respuestaCorrecta: situacionActual.decisionCorrecta,
+            explicacion: (idiomaActual === 'eu' && situacionActual.explicacionEu) ? situacionActual.explicacionEu : situacionActual.explicacion,
+            acertado: esAcierto
+        });
+
+        indiceExamenActual++;
+        cargarNuevaSituacion();
+        return;
+    }
+
+    // --- EN MODO PRÁCTICA: Sí mostramos acierto/fallo y explicación inmediata ---
     botonesOpcion.forEach(btn => {
         btn.disabled = true;
         if (btn.getAttribute('data-decision') === situacionActual.decisionCorrecta) {
@@ -815,12 +832,14 @@ function evaluarDecision(event) {
         }
     });
     
+    const panelFeedback = document.getElementById('panel-feedback');
+    const resultadoFeedback = document.getElementById('feedback-resultado');
+    const explicacionFeedback = document.getElementById('feedback-explicacion');
+
     if (panelFeedback) {
-        panelFeedback.classList.remove('oculto');
-        panelFeedback.classList.remove('acierto', 'fallo');
+        panelFeedback.classList.remove('oculto', 'acierto', 'fallo');
     }
 
-    const esAcierto = (decisionElegida.trim() === situacionActual.decisionCorrecta.trim());
     usuarioState.totalJugadas++;
 
     if (esAcierto) {
@@ -843,18 +862,6 @@ function evaluarDecision(event) {
         if (resultadoFeedback) resultadoFeedback.textContent = `${txt.falloMsg} (${txt.decisionOficial} ${nombreOficial})`;
     }
 
-    if (modoExamenActivo) {
-        historialExamen.push({
-            id: situacionActual.id,
-            enunciado: (idiomaActual === 'eu' && situacionActual.tipoEu) ? situacionActual.tipoEu : situacionActual.tipo,
-            tuRespuesta: decisionElegida,
-            respuestaCorrecta: situacionActual.decisionCorrecta,
-            explicacion: (idiomaActual === 'eu' && situacionActual.explicacionEu) ? situacionActual.explicacionEu : situacionActual.explicacion,
-            acertado: esAcierto
-        });
-        indiceExamenActual++;
-    }
-
     const explicacionFinal = (idiomaActual === 'eu' && situacionActual.explicacionEu) ? situacionActual.explicacionEu : situacionActual.explicacion;
     if (explicacionFeedback) {
         explicacionFeedback.textContent = explicacionFinal;
@@ -865,28 +872,63 @@ function evaluarDecision(event) {
 }
 
 // ==========================================
-// 4. FUNCIONES DE MODO EXAMEN Y REVISIÓN
+// 3. CONTROL DE MODO EXAMEN Y CRONÓMETRO
 // ==========================================
-function iniciarModoExamen() {
-    modoExamenActivo = true;
+function iniciarModoExamenOficial() {
+    tipoModoJuego = "examen";
     indiceExamenActual = 0;
-    historialExamen = [];
+    historialExamenActual = [];
+    tiempoExamenSegundos = 0;
 
-    preguntasExamen = [...situacionesDB].sort(() => Math.random() - 0.5);
+    // Seleccionar 25 preguntas aleatorias del total de 50 sin repetir
+    preguntasExamen = [...situacionesDB].sort(() => Math.random() - 0.5).slice(0, 25);
 
-    const contenedorResultados = document.getElementById('panel-resultados-examen');
-    if (contenedorResultados) contenedorResultados.remove();
+    // Ocultar paneles anteriores de resultados si los hubiera
+    const anterior = document.getElementById('panel-resultados-examen');
+    if (anterior) anterior.remove();
 
     const panelDecisiones = document.querySelector('.decisions');
     if (panelDecisiones) panelDecisiones.style.display = 'grid';
 
+    // Iniciar Cronómetro
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        tiempoExamenSegundos++;
+        actualizarRelojUI();
+    }, 1000);
+
+    crearBarraModoUI();
     cargarNuevaSituacion();
 }
 
-function finalizarExamen() {
-    modoExamenActivo = false;
-    const total = historialExamen.length;
-    const aciertos = historialExamen.filter(h => h.acertado).length;
+function iniciarModoPractica() {
+    tipoModoJuego = "practica";
+    if (timerInterval) clearInterval(timerInterval);
+
+    const anterior = document.getElementById('panel-resultados-examen');
+    if (anterior) anterior.remove();
+
+    const panelDecisiones = document.querySelector('.decisions');
+    if (panelDecisiones) panelDecisiones.style.display = 'grid';
+
+    crearBarraModoUI();
+    cargarNuevaSituacion();
+}
+
+function actualizarRelojUI() {
+    const relojEl = document.getElementById('reloj-examen');
+    if (!relojEl) return;
+    const mins = Math.floor(tiempoExamenSegundos / 60).toString().padStart(2, '0');
+    const secs = (tiempoExamenSegundos % 60).toString().padStart(2, '0');
+    relojEl.textContent = `⏱️ ${mins}:${secs}`;
+}
+
+function finalizarExamenOficial() {
+    if (timerInterval) clearInterval(timerInterval);
+    tipoModoJuego = "practica"; // Volvemos a estado libre
+
+    const total = historialExamenActual.length;
+    const aciertos = historialExamenActual.filter(h => h.acertado).length;
     const porcentaje = total > 0 ? Math.round((aciertos / total) * 100) : 0;
 
     const panelDecisiones = document.querySelector('.decisions');
@@ -895,30 +937,40 @@ function finalizarExamen() {
     const panelSituacion = document.querySelector('.panel');
     if (!panelSituacion) return;
 
+    // Guardar en Firestore el resultado del examen
+    guardarExamenEnNube(aciertos, total, porcentaje, tiempoExamenSegundos, historialExamenActual);
+
+    let mins = Math.floor(tiempoExamenSegundos / 60);
+    let secs = tiempoExamenSegundos % 60;
+
     let htmlRevision = `
-        <div id="panel-resultados-examen" style="margin-top: 15px; padding: 20px; background: rgba(10, 21, 18, 0.9); border: 1px solid var(--amarilla); border-radius: var(--radio-m);">
-            <h2 style="font-family: var(--fuente-display); font-size: 1.6rem; color: var(--amarilla); margin-bottom: 8px;">📋 Acta Oficial de Examen</h2>
-            <p style="font-size: 1.1rem; margin-bottom: 12px;">Resultado Final: <strong>${aciertos} / ${total}</strong> aciertos (${porcentaje}%)</p>
+        <div id="panel-resultados-examen" style="margin-top: 15px; padding: 20px; background: rgba(10, 21, 18, 0.95); border: 1px solid var(--amarilla); border-radius: var(--radio-m);">
+            <h2 style="font-family: var(--fuente-display); font-size: 1.6rem; color: var(--amarilla); margin-bottom: 6px;">📋 Acta Oficial de Examen</h2>
+            <p style="font-size: 1rem; margin-bottom: 4px;">Puntuación: <strong>${aciertos} / ${total}</strong> aciertos (<strong>${porcentaje}%</strong>)</p>
+            <p style="font-size: 0.85rem; color: var(--tenue); margin-bottom: 12px;">Tiempo empleado: ${mins}m ${secs}s</p>
             
-            <h3 style="font-size: 1rem; margin-bottom: 10px; color: var(--tenue);">Desglose de Jugadas y Revisión de Errores:</h3>
-            <div style="max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
+            <h3 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--amarilla-clara);">Revisión detallada de tus respuestas:</h3>
+            <div style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
     `;
 
-    historialExamen.forEach((item, index) => {
+    historialExamenActual.forEach((item, index) => {
         const colorBorde = item.acertado ? 'var(--verde-claro)' : 'var(--roja)';
         const icono = item.acertado ? '✅' : '❌';
         htmlRevision += `
-            <div style="padding: 10px; background: rgba(255,255,255,0.03); border-left: 4px solid ${colorBorde}; border-radius: 4px; font-size: 0.85rem;">
+            <div style="padding: 9px; background: rgba(255,255,255,0.03); border-left: 4px solid ${colorBorde}; border-radius: 4px; font-size: 0.82rem;">
                 <p><strong>#${index + 1} - ${item.enunciado}</strong> ${icono}</p>
-                <p style="color: var(--tenue); font-size: 0.8rem;">Tu opción: <em>${item.tuRespuesta}</em> | Oficial: <strong>${item.respuestaCorrecta}</strong></p>
-                <p style="color: var(--tenue-oscuro); font-size: 0.78rem; margin-top: 4px;">📖 ${item.explicacion}</p>
+                <p style="color: var(--tenue); font-size: 0.78rem;">Tu elección: <em>${item.tuRespuesta}</em> | Oficial IFAB: <strong>${item.respuestaCorrecta}</strong></p>
+                <p style="color: var(--tenue-oscuro); font-size: 0.75rem; margin-top: 3px;">📖 ${item.explicacion}</p>
             </div>
         `;
     });
 
     htmlRevision += `
             </div>
-            <button type="button" id="btn-reiniciar-examen" class="btn-siguiente" style="margin-top: 16px; width: 100%;">Volver a Empezar el Examen</button>
+            <div style="display: flex; gap: 10px; margin-top: 14px;">
+                <button type="button" id="btn-repetir-examen" class="btn-siguiente" style="flex: 1;">Hacer Nuevo Examen</button>
+                <button type="button" id="btn-ver-historial" class="btn-auth btn-auth--secundario" style="flex: 1; padding: 11px;">Ver Historial</button>
+            </div>
         </div>
     `;
 
@@ -926,15 +978,135 @@ function finalizarExamen() {
     if (existente) existente.remove();
     panelSituacion.insertAdjacentHTML('beforeend', htmlRevision);
 
-    document.getElementById('btn-reiniciar-examen').addEventListener('click', () => {
-        document.getElementById('panel-resultados-examen').remove();
-        if (panelDecisiones) panelDecisiones.style.display = 'grid';
-        iniciarModoExamen();
+    document.getElementById('btn-repetir-examen').addEventListener('click', () => {
+        iniciarModoExamenOficial();
+    });
+
+    document.getElementById('btn-ver-historial').addEventListener('click', () => {
+        mostrarModalHistorial();
     });
 }
 
 // ==========================================
-// 5. ACTUALIZAR INTERFAZ Y TRADUCCIONES
+// 4. INTERFAZ DE SELECTOR DE MODO E HISTORIAL
+// ==========================================
+function crearBarraModoUI() {
+    let barra = document.getElementById('barra-modos-refsim');
+    if (!barra) {
+        barra = document.createElement('div');
+        barra.id = 'barra-modos-refsim';
+        barra.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(8,18,15,0.8); padding: 8px 14px; border-radius: var(--radio-s); border: 1px solid var(--linea); margin-bottom: 12px;";
+        
+        const reviewMain = document.querySelector('.review');
+        if (reviewMain) reviewMain.parentNode.insertBefore(barra, reviewMain);
+    }
+
+    barra.innerHTML = `
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <button type="button" id="modo-btn-practica" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: var(--radio-pill); border: none; cursor: pointer; background: ${tipoModoJuego === 'practica' ? 'var(--verde)' : 'rgba(255,255,255,0.08)'}; color: ${tipoModoJuego === 'practica' ? 'var(--noche)' : 'var(--papel)'};">Modo Práctica</button>
+            <button type="button" id="modo-btn-examen" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: var(--radio-pill); border: none; cursor: pointer; background: ${tipoModoJuego === 'examen' ? 'var(--amarilla)' : 'rgba(255,255,255,0.08)'}; color: ${tipoModoJuego === 'examen' ? 'var(--noche)' : 'var(--papel)'};">Examen Oficial (25)</button>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <span id="reloj-examen" style="font-family: var(--fuente-display); font-size: 1.1rem; color: var(--amarilla); display: ${tipoModoJuego === 'examen' ? 'inline' : 'none'};">⏱️ 00:00</span>
+            <button type="button" id="btn-abrir-historial-global" style="background: none; border: none; color: var(--tenue); font-size: 0.82rem; font-weight: 600; cursor: pointer;">📂 Mis Exámenes</button>
+        </div>
+    `;
+
+    document.getElementById('modo-btn-practica').addEventListener('click', () => iniciarModoPractica());
+    document.getElementById('modo-btn-examen').addEventListener('click', () => iniciarModoExamenOficial());
+    document.getElementById('btn-abrir-historial-global').addEventListener('click', () => mostrarModalHistorial());
+}
+
+async function guardarExamenEnNube(aciertos, total, porcentaje, segundos, detalle) {
+    if (!usuarioFirebaseActual || !window.refSimFirebase) return;
+    const { db, doc, setDoc, getDoc, updateDoc, arrayUnion } = window.refSimFirebase;
+    try {
+        const docRef = doc(db, "usuarios", usuarioFirebaseActual.uid);
+        const docSnap = await getDoc(docRef);
+        
+        const nuevoExamen = {
+            fecha: new Date().toISOString(),
+            aciertos,
+            total,
+            porcentaje,
+            tiempoSegundos: segundos,
+            detalle
+        };
+
+        if (!docSnap.exists()) {
+            await setDoc(docRef, { historialExamenes: [nuevoExamen] }, { merge: true });
+        } else {
+            await updateDoc(docRef, {
+                historialExamenes: arrayUnion(nuevoExamen)
+            });
+        }
+    } catch (e) {
+        console.error("Error al guardar historial en Firebase:", e);
+    }
+}
+
+async function mostrarModalHistorial() {
+    let modal = document.getElementById('modal-historial-examenes');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'modal-historial-examenes';
+        modal.style.cssText = "position: fixed; inset: 0; z-index: 2000; background: rgba(3,8,6,0.8); display: flex; justify-content: center; align-items: center; padding: 20px;";
+        document.body.appendChild(modal);
+    }
+
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+        <div style="background: var(--panel); border: 1px solid var(--amarilla); border-radius: var(--radio-l); width: 100%; max-width: 480px; padding: 24px; position: relative; max-height: 80vh; display: flex; flexDirection: column;">
+            <button type="button" id="cerrar-modal-hist" style="position: absolute; top: 12px; right: 14px; background: none; border: none; font-size: 1.4rem; color: var(--tenue); cursor: pointer;">&times;</button>
+            <h3 style="font-family: var(--fuente-display); font-size: 1.4rem; color: var(--amarilla); margin-bottom: 12px;">📂 Historial de Exámenes</h3>
+            <div id="contenido-lista-historial" style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; padding-right: 4px;">
+                <p style="color: var(--tenue); text-align: center; padding: 20px;">Cargando tus exámenes...</p>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('cerrar-modal-hist').addEventListener('click', () => { modal.style.display = 'none'; });
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+
+    // Cargar desde Firebase o Local
+    let listaExamenes = [];
+    if (usuarioFirebaseActual && window.refSimFirebase) {
+        const { db, doc, getDoc } = window.refSimFirebase;
+        try {
+            const snap = await getDoc(doc(db, "usuarios", usuarioFirebaseActual.uid));
+            if (snap.exists() && snap.data().historialExamenes) {
+                listaExamenes = snap.data().historialExamenes;
+            }
+        } catch (e) {
+            console.error("Error al leer historial:", e);
+        }
+    }
+
+    const contenedorLista = document.getElementById('contenido-lista-historial');
+    if (listaExamenes.length === 0) {
+        contenedorLista.innerHTML = `<p style="color: var(--tenue); text-align: center; font-size: 0.9rem; padding: 20px;">No tienes exámenes registrados todavía. ¡Completa tu primer Examen Oficial de 25 preguntas!</p>`;
+        return;
+    }
+
+    let htmlExamenes = '';
+    listaExamenes.reverse().forEach((ex, idx) => {
+        let fechaFormateada = new Date(ex.fecha).toLocaleDateString() + ' ' + new Date(ex.fecha).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        let colorNota = ex.porcentaje >= 70 ? 'var(--verde-claro)' : 'var(--roja)';
+        htmlExamenes += `
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--linea); border-radius: var(--radio-s); padding: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <strong style="font-size: 0.9rem;">Examen #${listaExamenes.length - idx}</strong>
+                    <span style="color: ${colorNota}; font-weight: 700; font-size: 0.95rem;">${ex.porcentaje}% (${ex.aciertos}/${ex.total})</span>
+                </div>
+                <p style="color: var(--tenue); font-size: 0.78rem;">Fecha: ${fechaFormateada} | Tiempo: ${Math.floor(ex.tiempoSegundos/60)}m ${ex.tiempoSegundos%60}s</p>
+            </div>
+        `;
+    });
+    contenedorLista.innerHTML = htmlExamenes;
+}
+
+// ==========================================
+// 5. INTERFAZ Y TRADUCCIONES
 // ==========================================
 function actualizarMarcadorInterfaz() {
     const statPuntos = document.getElementById('stat-puntos');
@@ -1045,8 +1217,8 @@ async function cargarProgresoNube(uid) {
 
 document.addEventListener("DOMContentLoaded", () => {
     actualizarMarcadorInterfaz();
-    
-    iniciarModoExamen();
+    crearBarraModoUI();
+    cargarNuevaSituacion();
     aplicarTraducciones();
 
     const botonNuevaSituacion = document.getElementById('btn-nueva-situacion');
