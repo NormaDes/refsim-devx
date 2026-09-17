@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<!--
+  Identidad blanca: para vestir RefSim con otra federación, añade
+  data-tema="atlantico" (o el nombre de un nuevo bloque de tema que
+  definas en style.css §01b) a esta etiqueta <html>. No hace falta
+  tocar ninguna otra regla del CSS.
+-->
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -102,6 +108,10 @@
     <main class="review">
 
         <section class="monitor" aria-label="Repetición de la jugada">
+            <span class="hud-esquina hud-esquina--tl" aria-hidden="true"></span>
+            <span class="hud-esquina hud-esquina--tr" aria-hidden="true"></span>
+            <span class="hud-esquina hud-esquina--bl" aria-hidden="true"></span>
+            <span class="hud-esquina hud-esquina--br" aria-hidden="true"></span>
             <div class="monitor__bar">
                 <span class="monitor__dot" aria-hidden="true"></span>
                 <span>VAR · Repetición de la jugada</span>
@@ -130,36 +140,44 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12.5L10 17.5L19 6.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </span>
                     No hay falta
+                    <span class="decision__tecla" aria-hidden="true">1</span>
                 </button>
                 <button class="decision decision--foul btn-opcion" data-decision="Falta">
                     <span class="decision__glyph" aria-hidden="true">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2"/><path d="M12 7v6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="16.3" r="1.15" fill="currentColor"/></svg>
                     </span>
                     Falta
+                    <span class="decision__tecla" aria-hidden="true">2</span>
                 </button>
                 <button class="decision decision--yellow btn-opcion" data-decision="Falta + Tarjeta Amarilla">
                     <span class="decision__card" aria-hidden="true"></span>
                     Falta + Amarilla
+                    <span class="decision__tecla" aria-hidden="true">3</span>
                 </button>
                 <button class="decision decision--red btn-opcion" data-decision="Falta + Tarjeta Roja">
                     <span class="decision__card" aria-hidden="true"></span>
                     Falta + Roja
+                    <span class="decision__tecla" aria-hidden="true">4</span>
                 </button>
                 <button class="decision decision--penalty btn-opcion" data-decision="Penalti">
                     <span class="decision__card" aria-hidden="true" style="background:var(--papel)"></span>
                     Penalti
+                    <span class="decision__tecla" aria-hidden="true">5</span>
                 </button>
                 <button class="decision decision--penalty-yellow btn-opcion" data-decision="Penalti + Tarjeta Amarilla">
                     <span class="decision__card" aria-hidden="true" style="background:var(--amarilla)"></span>
                     Penalti + Amarilla
+                    <span class="decision__tecla" aria-hidden="true">6</span>
                 </button>
                 <button class="decision decision--goal btn-opcion" data-decision="Gol">
                     <span class="decision__glyph" aria-hidden="true">⚽</span>
                     Gol
+                    <span class="decision__tecla" aria-hidden="true">7</span>
                 </button>
                 <button class="decision decision--offside btn-opcion" data-decision="Fuera de juego">
                     <span class="decision__glyph" aria-hidden="true">🚩</span>
                     Fuera de juego
+                    <span class="decision__tecla" aria-hidden="true">8</span>
                 </button>
             </div>
 

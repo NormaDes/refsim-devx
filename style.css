@@ -80,6 +80,32 @@
     /* --- Lienzo de referencia del campo (coordenadas posX / posY) --- */
     --campo-ancho-ref: 760;
     --campo-alto-ref: 450;
+
+    /* --- Identidad (logotipo) --- */
+    --marca-logo-tam: 34px;
+}
+
+/* ==========================================================================
+   01b. TEMAS — sistema white-label
+   --------------------------------------------------------------------------
+   Todo el archivo consume únicamente los tokens de arriba (--amarilla,
+   --verde, --roja, --noche…), nunca valores sueltos. Para vestir RefSim con
+   la identidad de otra federación no se toca ni una regla: se añade un
+   bloque de tema aquí y se activa con `<html data-tema="...">`.
+
+   Ejemplo incluido: "atlantico" (acento azul/naranja) demuestra el patrón.
+   Para una federación real, basta con sustituir los seis valores de acento
+   y, si aplica, el logotipo en el <svg> del header.
+   ========================================================================== */
+:root[data-tema="atlantico"] {
+    --amarilla: #FFB238;
+    --amarilla-clara: #FFC968;
+    --amarilla-oscura: #C77E10;
+    --verde: #2E7FD6;
+    --verde-claro: #5FA8F5;
+    --verde-oscuro: #1B4A80;
+    --cesped-a: #2C6FB8;
+    --cesped-b: #24599A;
 }
 
 /* ==========================================================================
@@ -243,12 +269,27 @@ input {
 }
 
 .stat {
+    position: relative;
     min-width: 76px;
     padding: 6px 12px;
     text-align: right;
     background: rgba(8, 18, 15, 0.55);
     border: 1px solid var(--linea);
     border-radius: var(--radio-s);
+    overflow: hidden;
+}
+
+/* Franja de progreso de la precisión: se alimenta de --valor-precision (JS) */
+.stat:nth-child(2)::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--amarilla);
+    width: var(--valor-precision, 0%);
+    transition: width var(--lento);
 }
 
 .stat dt {
@@ -531,7 +572,31 @@ input {
 }
 
 .monitor {
+    position: relative;
     overflow: hidden;
+}
+
+/* Corchetes de encuadre: el gesto "cámara de revisión" del monitor VAR.
+   Es el único elemento decorativo con movimiento propio de la página. */
+.hud-esquina {
+    position: absolute;
+    z-index: 6;
+    width: 22px;
+    height: 22px;
+    pointer-events: none;
+    opacity: 0.8;
+    transition: opacity var(--medio), width var(--medio), height var(--medio);
+}
+
+.hud-esquina--tl { top: 10px;    left: 10px;  border-top: 2px solid var(--amarilla);    border-left: 2px solid var(--amarilla); }
+.hud-esquina--tr { top: 10px;    right: 10px; border-top: 2px solid var(--amarilla);    border-right: 2px solid var(--amarilla); }
+.hud-esquina--bl { bottom: 10px; left: 10px;  border-bottom: 2px solid var(--amarilla); border-left: 2px solid var(--amarilla); }
+.hud-esquina--br { bottom: 10px; right: 10px; border-bottom: 2px solid var(--amarilla); border-right: 2px solid var(--amarilla); }
+
+.monitor:hover .hud-esquina {
+    width: 28px;
+    height: 28px;
+    opacity: 1;
 }
 
 .monitor__bar {
@@ -828,7 +893,30 @@ input {
 .decision:hover:not(:disabled) {
     transform: translateY(-2px);
     border-color: var(--linea-fuerte);
-    box-shadow: 0 12px 24px -16px rgba(0, 0, 0, 0.9);
+    box-shadow: 0 12px 24px -16px rgba(0, 0, 0, 0.9), 0 0 0 1px color-mix(in srgb, var(--canto, var(--tenue-oscuro)) 45%, transparent);
+}
+
+/* Chip de atajo de teclado: refuerza la lectura "consola de mando" del panel */
+.decision__tecla {
+    margin-left: auto;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--tenue-oscuro);
+    background: rgba(8, 18, 15, 0.6);
+    border: 1px solid var(--linea);
+    border-radius: 5px;
+    transition: color var(--rapido), border-color var(--rapido);
+}
+
+.decision:hover:not(:disabled) .decision__tecla {
+    color: var(--canto, var(--papel));
+    border-color: color-mix(in srgb, var(--canto, var(--tenue-oscuro)) 50%, transparent);
 }
 
 .decision:hover:not(:disabled)::before {

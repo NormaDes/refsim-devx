@@ -852,7 +852,11 @@ function actualizarMarcadorInterfaz() {
         : 0;
 
     if (statPuntos) statPuntos.textContent = usuarioState.puntos;
-    if (statPrecision) statPrecision.textContent = `${precisionCalculada}%`;
+    if (statPrecision) {
+        statPrecision.textContent = `${precisionCalculada}%`;
+        const statCard = statPrecision.closest('.stat');
+        if (statCard) statCard.style.setProperty('--valor-precision', `${precisionCalculada}%`);
+    }
     if (statRacha) statRacha.textContent = usuarioState.racha;
 }
 
@@ -997,6 +1001,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const botonesOpcion = document.querySelectorAll('.btn-opcion');
     botonesOpcion.forEach(boton => {
         boton.addEventListener('click', evaluarDecision);
+    });
+
+    // Atajos de teclado 1-8: misma consola de mando que un panel VAR real.
+    document.addEventListener('keydown', (e) => {
+        const enCampoDeTexto = document.activeElement && ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
+        if (enCampoDeTexto) return;
+        const indice = parseInt(e.key, 10) - 1;
+        if (Number.isNaN(indice) || indice < 0 || indice >= botonesOpcion.length) return;
+        const boton = botonesOpcion[indice];
+        if (boton && !boton.disabled) boton.click();
     });
 
     const contenedorBanderas = document.getElementById("selector-idioma");
