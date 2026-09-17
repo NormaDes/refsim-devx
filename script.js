@@ -923,6 +923,39 @@ function actualizarRelojUI() {
     relojEl.textContent = `⏱️ ${mins}:${secs}`;
 }
 
+async function guardarExamenEnNube(aciertos, total, porcentaje, segundos, detalle) {
+    if (!usuarioFirebaseActual || !window.refSimFirebase) return;
+    const { db, doc, setDoc, getDoc } = window.refSimFirebase;
+    try {
+        const docRef = doc(db, "usuarios", usuarioFirebaseActual.uid);
+        const docSnap = await getDoc(docRef);
+        
+        let historialExistente = [];
+        if (docSnap.exists() && docSnap.data().historialExamenes) {
+            historialExistente = docSnap.data().historialExamenes;
+        }
+
+        const nuevoExamen = {
+            fecha: new Date().toISOString(),
+            aciertos,
+            total,
+            porcentaje,
+            tiempoSegundos: segundos,
+            detalle
+        };
+
+        historialExistente.push(nuevoExamen);
+
+        await setDoc(docRef, { 
+            historialExamenes: historialExistente 
+        }, { merge: true });
+
+        console.log("Examen guardado correctamente en la nube.");
+    } catch (e) {
+        console.error("Error al guardar historial en Firebase:", e);
+    }
+}
+
 function finalizarExamenOficial() {
     if (timerInterval) clearInterval(timerInterval);
     tipoModoJuego = "practica"; // Volvemos a estado libre
