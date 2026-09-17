@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RefSim — Simulador Arbitral IFAB</title>
+<meta name="description" content="Pon a prueba tus decisiones arbitrales según el reglamento IFAB en jugadas reales de fútbol.">
+<meta name="theme-color" content="#070E0C">
+<link rel="canonical" href="https://tudominio.com/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="RefSim — Simulador Arbitral IFAB">
+<meta property="og:description" content="Pon a prueba tus decisiones arbitrales según el reglamento IFAB en jugadas reales de fútbol.">
+<meta property="og:locale" content="es_ES">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Ccircle cx='17' cy='17' r='16' fill='%230A1512'/%3E%3Ccircle cx='17' cy='17' r='15.5' stroke='%23F5C518' stroke-width='1.6' fill='none'/%3E%3Cpath d='M17 8 L21 14 L28 15 L23 20 L24.5 27 L17 23.5 L9.5 27 L11 20 L6 15 L13 14 Z' fill='%23F5C518'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6712707302498032"
+ crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="broadcast">
+
+    <!-- BARRA MARCADOR -->
+    <header class="scorebug">
+        <div class="scorebug__brand">
+            <svg class="scorebug__mark" width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="17" cy="17" r="15.5" stroke="#F5C518" stroke-width="2"/>
+                <path d="M17 8 L21 14 L28 15 L23 20 L24.5 27 L17 23.5 L9.5 27 L11 20 L6 15 L13 14 Z" fill="#F5C518"/>
+            </svg>
+            <div>
+                <h1>RefSim</h1>
+                <p class="scorebug__tag">Simulador arbitral · Reglas del Juego IFAB</p>
+            </div>
+        </div>
+
+        <div class="scorebug__controles">
+            <!-- SELECTOR DE IDIOMA -->
+            <div class="idioma" id="selector-idioma" role="group" aria-label="Idioma">
+                <button type="button" data-lang="es" class="is-activo" aria-pressed="true" title="Castellano">🇪🇸</button>
+                <button type="button" data-lang="eu" aria-pressed="false" title="Euskera">🟢🔴</button>
+            </div>
+
+            <dl class="scorebug__stats">
+                <div class="stat">
+                    <dt id="label-puntos">Puntos</dt>
+                    <dd id="stat-puntos">0</dd>
+                </div>
+                <div class="stat">
+                    <dt id="label-precision">Precisión</dt>
+                    <dd id="stat-precision">0%</dd>
+                </div>
+                <div class="stat">
+                    <dt id="label-racha">Racha</dt>
+                    <dd id="stat-racha">0</dd>
+                </div>
+            </dl>
+
+            <button type="button" id="btn-abrir-auth" class="btn-acceso">Acceso</button>
+
+            <!-- Contenedor dinámico: saludo + cerrar sesión cuando hay sesión -->
+            <div id="auth-container-ui"></div>
+        </div>
+    </header>
+
+    <!-- MODAL DE AUTENTICACIÓN -->
+    <div id="auth-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="auth-titulo">
+        <div class="auth-card">
+            <button type="button" id="btn-cerrar-auth" class="auth-card__cerrar" aria-label="Cerrar">&times;</button>
+            <h3 id="auth-titulo">Acceso a RefSim</h3>
+            <p class="auth-card__intro">Entra para guardar tus puntos y tu racha en cualquier dispositivo.</p>
+
+            <input type="email" id="user-email" class="campo-texto" autocomplete="email" placeholder="Correo electrónico">
+            <input type="password" id="user-password" class="campo-texto" autocomplete="current-password" placeholder="Contraseña">
+
+            <div class="auth-card__acciones">
+                <button type="button" id="btn-login" class="btn-auth btn-auth--primario">Iniciar sesión</button>
+                <button type="button" id="btn-register" class="btn-auth btn-auth--secundario">Crear cuenta</button>
+            </div>
+
+            <p id="auth-status" aria-live="polite"></p>
+        </div>
+    </div>
+
+    <!-- PUBLICIDAD: BANNER SUPERIOR -->
+    <div class="ad-slot ad-slot--banner">
+        <span class="ad-slot__label">Publicidad</span>
+        <div class="ad-slot__unit">
+            <ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6712707302498032"
+     data-ad-slot="7857499167"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+
+    <!-- SALA DE REVISIÓN -->
+    <main class="review">
+
+        <section class="monitor" aria-label="Repetición de la jugada">
+            <div class="monitor__bar">
+                <span class="monitor__dot" aria-hidden="true"></span>
+                <span>VAR · Repetición de la jugada</span>
+            </div>
+            <div id="campo" class="pitch">
+                <div class="pitch__line pitch__line--borde"></div>
+                <div class="pitch__line pitch__area-izq"></div>
+                <div class="pitch__line pitch__area-chica-izq"></div>
+                <div class="pitch__line pitch__centro"></div>
+                <div class="pitch__circulo"></div>
+                <div class="pitch__line pitch__area-der"></div>
+                <div class="pitch__line pitch__area-chica-der"></div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="situation">
+                <span id="situacion-id" class="situation__id">Jugada</span>
+                <h2 id="situacion-titulo">Cargando situación…</h2>
+                <p id="situacion-descripcion">Un momento, el árbitro revisa la jugada…</p>
+            </div>
+
+            <div class="decisions" role="group" aria-label="Elige tu decisión arbitral">
+                <button class="decision decision--clean btn-opcion" data-decision="No hay falta">
+                    <span class="decision__glyph" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12.5L10 17.5L19 6.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                    No hay falta
+                </button>
+                <button class="decision decision--foul btn-opcion" data-decision="Falta">
+                    <span class="decision__glyph" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2"/><path d="M12 7v6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="16.3" r="1.15" fill="currentColor"/></svg>
+                    </span>
+                    Falta
+                </button>
+                <button class="decision decision--yellow btn-opcion" data-decision="Falta + Tarjeta Amarilla">
+                    <span class="decision__card" aria-hidden="true"></span>
+                    Falta + Amarilla
+                </button>
+                <button class="decision decision--red btn-opcion" data-decision="Falta + Tarjeta Roja">
+                    <span class="decision__card" aria-hidden="true"></span>
+                    Falta + Roja
+                </button>
+                <button class="decision decision--penalty btn-opcion" data-decision="Penalti">
+                    <span class="decision__card" aria-hidden="true" style="background:var(--papel)"></span>
+                    Penalti
+                </button>
+                <button class="decision decision--penalty-yellow btn-opcion" data-decision="Penalti + Tarjeta Amarilla">
+                    <span class="decision__card" aria-hidden="true" style="background:var(--amarilla)"></span>
+                    Penalti + Amarilla
+                </button>
+                <button class="decision decision--goal btn-opcion" data-decision="Gol">
+                    <span class="decision__glyph" aria-hidden="true">⚽</span>
+                    Gol
+                </button>
+                <button class="decision decision--offside btn-opcion" data-decision="Fuera de juego">
+                    <span class="decision__glyph" aria-hidden="true">🚩</span>
+                    Fuera de juego
+                </button>
+            </div>
+
+            <div id="panel-feedback" class="feedback oculto" aria-live="polite">
+                <h3 id="feedback-resultado"></h3>
+                <p id="feedback-explicacion"></p>
+                <button type="button" id="btn-nueva-situacion" class="btn-siguiente">Siguiente jugada</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- PUBLICIDAD: RECTÁNGULO INFERIOR -->
+    <div class="ad-slot ad-slot--rectangle">
+        <span class="ad-slot__label">Publicidad</span>
+        <div class="ad-slot__unit">
+            <ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6712707302498032"
+     data-ad-slot="7857499167"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="footer-legal">
+        <p>&copy; 2026 RefSim — Basado en las Reglas del Juego de la IFAB.</p>
+        <nav class="footer-links">
+            <a href="#privacidad" onclick="alert('Política de Privacidad: RefSim utiliza almacenamiento local para guardar tu progreso de juego. No recopilamos datos personales sin tu consentimiento.')">Política de Privacidad</a>
+            <span aria-hidden="true">·</span>
+            <a href="#contacto" onclick="alert('Contacto: Para consultas o sugerencias escribe a soporte@refsim.com')">Contacto</a>
+        </nav>
+    </footer>
+
+</div>
+
+<!-- INICIALIZACIÓN DE FIREBASE (Módulo) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCQhvaVlLdX56ZbOxndecX9QuJ3Y1Ox5vA",
+    authDomain: "refsim-c2241.firebaseapp.com",
+    projectId: "refsim-c2241",
+    storageBucket: "refsim-c2241.firebasestorage.app",
+    messagingSenderId: "254585050294",
+    appId: "1:254585050294:web:d889e356479178e43ec217",
+    measurementId: "G-69FHB3QDV1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  window.refSimFirebase = { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, doc, setDoc, getDoc };
+  console.log("Firebase conectado correctamente en RefSim");
+</script>
+
+<script src="script.js"></script>
+</body>
+</html>
