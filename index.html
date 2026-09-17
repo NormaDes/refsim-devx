@@ -220,7 +220,14 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+    updateDoc,
+    arrayUnion
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCQhvaVlLdX56ZbOxndecX9QuJ3Y1Ox5vA",
@@ -236,7 +243,19 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  window.refSimFirebase = { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, doc, setDoc, getDoc };
+  window.refSimFirebase = {
+    auth,
+    db,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged,
+    doc,
+    setDoc,
+    getDoc,
+    updateDoc,
+    arrayUnion
+};
   console.log("Firebase conectado correctamente en RefSim");
 </script>
 
