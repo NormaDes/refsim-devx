@@ -68,7 +68,47 @@ const traducciones = {
             "Penalti + Tarjeta Amarilla": "Penalti + tarjeta amarilla",
             "Gol": "Gol",
             "Fuera de juego": "Fuera de juego"
-        }
+        },
+
+        btnNoFaltaDesc: "El contacto es legal, no es motivo de sanción.",
+        btnFaltaDesc: "Infracción sancionable con tiro libre directo.",
+        btnAmarillaDesc: "Es una falta imprudente o táctica.",
+        btnRojaDesc: "Juego brusco grave o fuerza excesiva.",
+        btnPenaltiDesc: "Infracción dentro del área que impide el juego.",
+        btnPenaltiAmarillaDesc: "Infracción imprudente cometida en el área.",
+        btnGolDesc: "El balón cruzó la línea de meta reglamentariamente.",
+        btnFueraDeJuegoDesc: "Posición antirreglamentaria al recibir el balón.",
+
+        navInicio: "Inicio",
+        navPractica: "Práctica",
+        navExamen: "Examen",
+        navEstadisticas: "Estadísticas",
+        navAjustes: "Ajustes",
+
+        modoPracticaTitulo: "Práctica",
+        modoPracticaDesc: "Entrena a tu ritmo",
+        modoExamenTitulo: "Examen Oficial (25)",
+        modoExamenDesc: "Simula el examen real",
+        modoPartidosTitulo: "Mis Partidos",
+        modoPartidosDesc: "Tus estadísticas y progreso",
+
+        metaMinuto: "Minuto",
+        metaZona: "Zona de la jugada",
+        metaContexto: "Contexto",
+
+        zonaDefensiva: "Zona defensiva",
+        zonaMedio: "Medio campo",
+        zonaOfensiva: "Zona ofensiva",
+        zonaArea: "Área de penalti",
+
+        ctxOffside: "Ataque en posición adelantada",
+        ctxArea: "Disputa dentro del área",
+        ctxGol: "Finalización a portería",
+        ctxDisputa: "Disputa del balón",
+
+        tickerMsg: "Sigue entrenando. Cada decisión cuenta.",
+        ajustesTitulo: "Ajustes",
+        ajustesIntro: "Más opciones de personalización, próximamente."
     },
 
     eu: {
@@ -117,7 +157,47 @@ const traducciones = {
             "Penalti + Tarjeta Amarilla": "Penaltia + txartel horia",
             "Gol": "Gola",
             "Fuera de juego": "Jokoz kanpo"
-        }
+        },
+
+        btnNoFaltaDesc: "Ukipena legezkoa da, ez du zigorrik behar.",
+        btnFaltaDesc: "Jaurtiketa libre zuzenarekin zigortu beharreko arau-haustea.",
+        btnAmarillaDesc: "Falta inprudentea edo taktikoa da.",
+        btnRojaDesc: "Joko zakar larria edo gehiegizko indarra.",
+        btnPenaltiDesc: "Árean jokoa eragozten duen arau-haustea.",
+        btnPenaltiAmarillaDesc: "Árean egindako falta inprudentea.",
+        btnGolDesc: "Baloiak ate-lerroa arauz gaindu du.",
+        btnFueraDeJuegoDesc: "Baloia jaso duenean posizio ilegalean zegoen.",
+
+        navInicio: "Hasiera",
+        navPractica: "Praktika",
+        navExamen: "Azterketa",
+        navEstadisticas: "Estatistikak",
+        navAjustes: "Ezarpenak",
+
+        modoPracticaTitulo: "Praktika",
+        modoPracticaDesc: "Trebatu zure erritmoan",
+        modoExamenTitulo: "Azterketa Ofiziala (25)",
+        modoExamenDesc: "Benetako azterketa simulatu",
+        modoPartidosTitulo: "Nire Partidak",
+        modoPartidosDesc: "Zure estatistikak eta aurrerapena",
+
+        metaMinuto: "Minutua",
+        metaZona: "Jokaldiaren eremua",
+        metaContexto: "Testuingurua",
+
+        zonaDefensiva: "Defentsa eremua",
+        zonaMedio: "Erdi zelaia",
+        zonaOfensiva: "Eraso eremua",
+        zonaArea: "Penalti eremua",
+
+        ctxOffside: "Eraso jokoz kanpoko posizioan",
+        ctxArea: "Eremuko lehia",
+        ctxGol: "Ate aurreko amaiera",
+        ctxDisputa: "Baloiaren lehia",
+
+        tickerMsg: "Jarraitu trebatzen. Erabaki bakoitzak balio du.",
+        ajustesTitulo: "Ezarpenak",
+        ajustesIntro: "Pertsonalizazio aukera gehiago, laster."
     }
 };
 
@@ -773,12 +853,14 @@ function cargarNuevaSituacion() {
     }
 
     const idSituacion = document.getElementById('situacion-id');
+    const idSituacionPanel = document.getElementById('situacion-id-panel');
     const tituloSituacion = document.getElementById('situacion-titulo');
     const descripcionSituacion = document.getElementById('situacion-descripcion');
 
     const prefixNum = tipoModoJuego === "examen" ? `Examen Oficial [${indiceExamenActual + 1}/${preguntasExamen.length}]` : `${t().jugada} #${situacionActual.id}`;
     if (idSituacion) idSituacion.textContent = prefixNum;
-    
+    if (idSituacionPanel) idSituacionPanel.textContent = prefixNum;
+
     if (tituloSituacion) {
         tituloSituacion.textContent = (idiomaActual === 'eu' && situacionActual.tipoEu) ? situacionActual.tipoEu : situacionActual.tipo;
     }
@@ -787,6 +869,49 @@ function cargarNuevaSituacion() {
     }
 
     colocarMarcador(situacionActual.posX, situacionActual.posY);
+    actualizarMetaJugada(situacionActual);
+}
+
+// ==========================================
+// 1b. INFORMACIÓN CONTEXTUAL DE LA JUGADA (minuto / zona / contexto)
+// ==========================================
+function calcularZonaJugada(x, y) {
+    const cercaPorteria = x < 90 || x > (CAMPO_REF.ancho - 90);
+    const cercaCentroVertical = y > CAMPO_REF.alto * 0.18 && y < CAMPO_REF.alto * 0.82;
+    if (cercaPorteria && cercaCentroVertical) return 'zonaArea';
+    if (x < CAMPO_REF.ancho * 0.38) return 'zonaDefensiva';
+    if (x > CAMPO_REF.ancho * 0.62) return 'zonaOfensiva';
+    return 'zonaMedio';
+}
+
+function calcularContextoJugada(situacion) {
+    const decision = situacion.decisionCorrecta;
+    if (decision === 'Fuera de juego') return 'ctxOffside';
+    if (decision.includes('Penalti')) return 'ctxArea';
+    if (decision === 'Gol') return 'ctxGol';
+    return 'ctxDisputa';
+}
+
+function actualizarMetaJugada(situacion) {
+    const txt = t();
+    const elMinuto = document.getElementById('meta-minuto');
+    const elZona = document.getElementById('meta-zona');
+    const elContexto = document.getElementById('meta-contexto');
+
+    const minuto = ((situacion.id * 17) % 90) + 1;
+    if (elMinuto) elMinuto.textContent = `${minuto}'`;
+
+    const claveZona = calcularZonaJugada(situacion.posX, situacion.posY);
+    if (elZona) {
+        elZona.textContent = txt[claveZona];
+        elZona.dataset.clave = claveZona;
+    }
+
+    const claveContexto = calcularContextoJugada(situacion);
+    if (elContexto) {
+        elContexto.textContent = txt[claveContexto];
+        elContexto.dataset.clave = claveContexto;
+    }
 }
 
 function colocarMarcador(x, y) {
@@ -1024,30 +1149,27 @@ function finalizarExamenOficial() {
 // 4. INTERFAZ DE SELECTOR DE MODO E HISTORIAL
 // ==========================================
 function crearBarraModoUI() {
-    let barra = document.getElementById('barra-modos-refsim');
-    if (!barra) {
-        barra = document.createElement('div');
-        barra.id = 'barra-modos-refsim';
-        barra.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(8,18,15,0.8); padding: 8px 14px; border-radius: var(--radio-s); border: 1px solid var(--linea); margin-bottom: 12px;";
-        
-        const reviewMain = document.querySelector('.review');
-        if (reviewMain) reviewMain.parentNode.insertBefore(barra, reviewMain);
-    }
+    actualizarActivoModoUI();
+}
 
-    barra.innerHTML = `
-        <div style="display: flex; gap: 8px; align-items: center;">
-            <button type="button" id="modo-btn-practica" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: var(--radio-pill); border: none; cursor: pointer; background: ${tipoModoJuego === 'practica' ? 'var(--verde)' : 'rgba(255,255,255,0.08)'}; color: ${tipoModoJuego === 'practica' ? 'var(--noche)' : 'var(--papel)'};">Modo Práctica</button>
-            <button type="button" id="modo-btn-examen" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; border-radius: var(--radio-pill); border: none; cursor: pointer; background: ${tipoModoJuego === 'examen' ? 'var(--amarilla)' : 'rgba(255,255,255,0.08)'}; color: ${tipoModoJuego === 'examen' ? 'var(--noche)' : 'var(--papel)'};">Examen Oficial (25)</button>
-        </div>
-        <div style="display: flex; gap: 12px; align-items: center;">
-            <span id="reloj-examen" style="font-family: var(--fuente-display); font-size: 1.1rem; color: var(--amarilla); display: ${tipoModoJuego === 'examen' ? 'inline' : 'none'};">⏱️ 00:00</span>
-            <button type="button" id="btn-abrir-historial-global" style="background: none; border: none; color: var(--tenue); font-size: 0.82rem; font-weight: 600; cursor: pointer;">📂 Mis Exámenes</button>
-        </div>
-    `;
+// Sincroniza el estado visual (tarjetas de modo + navegación) con tipoModoJuego,
+// sin recrear nodos: solo alterna clases y visibilidad.
+function actualizarActivoModoUI() {
+    const cardPractica = document.getElementById('modecard-practica');
+    const cardExamen = document.getElementById('modecard-examen');
+    const navPractica = document.getElementById('nav-practica');
+    const navExamen = document.getElementById('nav-examen');
+    const navInicio = document.getElementById('nav-inicio');
+    const relojEl = document.getElementById('reloj-examen');
 
-    document.getElementById('modo-btn-practica').addEventListener('click', () => iniciarModoPractica());
-    document.getElementById('modo-btn-examen').addEventListener('click', () => iniciarModoExamenOficial());
-    document.getElementById('btn-abrir-historial-global').addEventListener('click', () => mostrarModalHistorial());
+    const enExamen = tipoModoJuego === 'examen';
+
+    if (cardPractica) cardPractica.classList.toggle('is-activo', !enExamen);
+    if (cardExamen) cardExamen.classList.toggle('is-activo', enExamen);
+    if (navPractica) navPractica.classList.toggle('is-activo', !enExamen);
+    if (navExamen) navExamen.classList.toggle('is-activo', enExamen);
+    if (navInicio) navInicio.classList.toggle('is-activo', false);
+    if (relojEl) relojEl.style.display = enExamen ? 'inline-flex' : 'none';
 }
 
 async function guardarExamenEnNube(aciertos, total, porcentaje, segundos, detalle) {
@@ -1161,7 +1283,13 @@ function actualizarMarcadorInterfaz() {
 
 function aplicarTraducciones() {
     const t = traducciones[idiomaActual] || traducciones.es;
-    
+
+    // Traducciones genéricas por atributo data-i18n
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const clave = el.getAttribute('data-i18n');
+        if (t[clave] !== undefined) el.textContent = t[clave];
+    });
+
     const tag = document.querySelector('.scorebug__tag');
     if (tag) tag.textContent = t.tagSimulador;
 
@@ -1178,17 +1306,25 @@ function aplicarTraducciones() {
     const varText = document.querySelector('.monitor__bar span:last-child');
     if (varText) varText.textContent = t.varRepeticion;
 
-    // Traducir los botones de decisión del panel
+    // Traducir los botones de decisión del panel (icono + título + descripción + atajo)
     const botonesOpcion = document.querySelectorAll('.btn-opcion');
     if (botonesOpcion.length >= 8) {
-        botonesOpcion[0].innerHTML = `<span class="decision__glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12.5L10 17.5L19 6.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span> ${t.btnNoFalta}`;
-        botonesOpcion[1].innerHTML = `<span class="decision__glyph" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2"/><path d="M12 7v6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="16.3" r="1.15" fill="currentColor"/></svg></span> ${t.btnFalta}`;
-        botonesOpcion[2].innerHTML = `<span class="decision__card" aria-hidden="true"></span> ${t.btnAmarilla}`;
-        botonesOpcion[3].innerHTML = `<span class="decision__card" aria-hidden="true"></span> ${t.btnRoja}`;
-        botonesOpcion[4].innerHTML = `<span class="decision__card" aria-hidden="true" style="background:var(--papel)"></span> ${t.btnPenalti}`;
-        botonesOpcion[5].innerHTML = `<span class="decision__card" aria-hidden="true" style="background:var(--amarilla)"></span> ${t.btnPenaltiAmarilla}`;
-        botonesOpcion[6].innerHTML = `<span class="decision__glyph" aria-hidden="true">⚽</span> ${t.btnGol}`;
-        botonesOpcion[7].innerHTML = `<span class="decision__glyph" aria-hidden="true">🚩</span> ${t.btnFueraDeJuego}`;
+        const contenidoDecision = (glyphHtml, titulo, desc, tecla) => `
+            ${glyphHtml}
+            <span class="decision__texto">
+                <span class="decision__titulo">${titulo}</span>
+                <span class="decision__desc">${desc}</span>
+            </span>
+            <span class="decision__tecla" aria-hidden="true">${tecla}</span>
+        `;
+        botonesOpcion[0].innerHTML = contenidoDecision('<span class="decision__glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12.5L10 17.5L19 6.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>', t.btnNoFalta, t.btnNoFaltaDesc, 1);
+        botonesOpcion[1].innerHTML = contenidoDecision('<span class="decision__glyph" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2"/><path d="M12 7v6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="16.3" r="1.15" fill="currentColor"/></svg></span>', t.btnFalta, t.btnFaltaDesc, 2);
+        botonesOpcion[2].innerHTML = contenidoDecision('<span class="decision__card" aria-hidden="true"></span>', t.btnAmarilla, t.btnAmarillaDesc, 3);
+        botonesOpcion[3].innerHTML = contenidoDecision('<span class="decision__card" aria-hidden="true"></span>', t.btnRoja, t.btnRojaDesc, 4);
+        botonesOpcion[4].innerHTML = contenidoDecision('<span class="decision__card" aria-hidden="true" style="background:var(--papel)"></span>', t.btnPenalti, t.btnPenaltiDesc, 5);
+        botonesOpcion[5].innerHTML = contenidoDecision('<span class="decision__card" aria-hidden="true" style="background:var(--amarilla)"></span>', t.btnPenaltiAmarilla, t.btnPenaltiAmarillaDesc, 6);
+        botonesOpcion[6].innerHTML = contenidoDecision('<span class="decision__glyph" aria-hidden="true">⚽</span>', t.btnGol, t.btnGolDesc, 7);
+        botonesOpcion[7].innerHTML = contenidoDecision('<span class="decision__glyph" aria-hidden="true">🚩</span>', t.btnFueraDeJuego, t.btnFueraDeJuegoDesc, 8);
     }
 
     const btnSig = document.getElementById('btn-nueva-situacion');
@@ -1205,22 +1341,16 @@ function aplicarTraducciones() {
             descripcionSituacion.textContent = (idiomaActual === 'eu' && situacionActual.descripcionEu) ? situacionActual.descripcionEu : situacionActual.descripcion;
         }
 
+        const nuevoPrefix = tipoModoJuego === "examen"
+            ? (idiomaActual === 'eu' ? `Azterketa [${indiceExamenActual + 1}/${preguntasExamen.length}]` : `Examen [${indiceExamenActual + 1}/${preguntasExamen.length}]`)
+            : `${t.jugada} #${situacionActual.id}`;
         const idSituacion = document.getElementById('situacion-id');
-        if (idSituacion) {
-            idSituacion.textContent = tipoModoJuego === "examen" 
-                ? (idiomaActual === 'eu' ? `Azterketa [${indiceExamenActual + 1}/${preguntasExamen.length}]` : `Examen [${indiceExamenActual + 1}/${preguntasExamen.length}]`)
-                : `${t.jugada} #${situacionActual.id}`;
-        }
-    }
+        const idSituacionPanel = document.getElementById('situacion-id-panel');
+        if (idSituacion) idSituacion.textContent = nuevoPrefix;
+        if (idSituacionPanel) idSituacionPanel.textContent = nuevoPrefix;
 
-    // Traducir la barra superior de modos si está creada
-    const btnPracticaEl = document.getElementById('modo-btn-practica');
-    const btnExamenEl = document.getElementById('modo-btn-examen');
-    const btnHistorialEl = document.getElementById('btn-abrir-historial-global');
-    
-    if (btnPracticaEl) btnPracticaEl.textContent = idiomaActual === 'eu' ? 'Praktika Modua' : 'Modo Práctica';
-    if (btnExamenEl) btnExamenEl.textContent = idiomaActual === 'eu' ? 'Azterketa Ofiziala (25)' : 'Examen Oficial (25)';
-    if (btnHistorialEl) btnHistorialEl.textContent = idiomaActual === 'eu' ? '📂 Nire Azterketak' : '📂 Mis Exámenes';
+        actualizarMetaJugada(situacionActual);
+    }
 
     // Marcar visualmente la bandera activa
     document.querySelectorAll('#selector-idioma button').forEach(b => {
@@ -1331,9 +1461,57 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btnCerrarAuth && modalAuth) {
         btnCerrarAuth.addEventListener("click", () => { modalAuth.style.display = "none"; });
     }
+
+    // --- MODAL DE AJUSTES ---
+    const modalAjustes = document.getElementById("ajustes-modal");
+    const btnCerrarAjustes = document.getElementById("btn-cerrar-ajustes");
+    if (btnCerrarAjustes && modalAjustes) {
+        btnCerrarAjustes.addEventListener("click", () => { modalAjustes.style.display = "none"; });
+    }
+
     window.addEventListener("click", (e) => {
         if (modalAuth && e.target === modalAuth) { modalAuth.style.display = "none"; }
+        if (modalAjustes && e.target === modalAjustes) { modalAjustes.style.display = "none"; }
     });
+
+    // --- NAVEGACIÓN PRINCIPAL ---
+    const navInicio = document.getElementById('nav-inicio');
+    const navPractica = document.getElementById('nav-practica');
+    const navExamen = document.getElementById('nav-examen');
+    const navEstadisticas = document.getElementById('nav-estadisticas');
+    const navAjustes = document.getElementById('nav-ajustes');
+
+    if (navInicio) navInicio.addEventListener('click', () => iniciarModoPractica());
+    if (navPractica) navPractica.addEventListener('click', () => iniciarModoPractica());
+    if (navExamen) navExamen.addEventListener('click', () => iniciarModoExamenOficial());
+    if (navEstadisticas) navEstadisticas.addEventListener('click', () => mostrarModalHistorial());
+    if (navAjustes) navAjustes.addEventListener('click', () => { if (modalAjustes) modalAjustes.style.display = 'flex'; });
+
+    // --- TARJETAS DE MODO ---
+    const cardPractica = document.getElementById('modecard-practica');
+    const cardExamen = document.getElementById('modecard-examen');
+    const cardPartidos = document.getElementById('modecard-partidos');
+
+    if (cardPractica) cardPractica.addEventListener('click', () => iniciarModoPractica());
+    if (cardExamen) cardExamen.addEventListener('click', () => iniciarModoExamenOficial());
+    if (cardPartidos) cardPartidos.addEventListener('click', () => mostrarModalHistorial());
+
+    // --- MONITOR: siguiente jugada rápida y pantalla completa ---
+    const btnJugadaSiguiente = document.getElementById('btn-jugada-siguiente');
+    if (btnJugadaSiguiente) btnJugadaSiguiente.addEventListener('click', () => cargarNuevaSituacion());
+
+    const btnFullscreen = document.getElementById('btn-fullscreen-monitor');
+    if (btnFullscreen) {
+        btnFullscreen.addEventListener('click', () => {
+            const monitorEl = document.querySelector('.monitor');
+            if (!monitorEl) return;
+            if (!document.fullscreenElement) {
+                monitorEl.requestFullscreen?.();
+            } else {
+                document.exitFullscreen?.();
+            }
+        });
+    }
 
     const verificarFirebaseInterval = setInterval(() => {
         if (window.refSimFirebase) {
@@ -1369,9 +1547,11 @@ function configurarAuthFirebase(modalAuth, btnAbrirAuth) {
 
             if (authContainer) {
                 let nombreCorto = user.email.split('@')[0];
+                authContainer.classList.add('cuenta-pill');
                 authContainer.innerHTML = `
-                    <span style="color: var(--amarilla); font-weight: 700; font-size: 0.85rem;">👤 ${nombreCorto}</span>
-                    <button id="btn-cerrar-sesion" style="background: #E63946; color: white; border: none; padding: 6px 10px; border-radius: var(--radio-s); font-weight: 700; cursor: pointer; font-size: 0.8rem;">${t().authCerrarSesion}</button>
+                    <span class="cuenta-pill__avatar" aria-hidden="true">👤</span>
+                    <span class="cuenta-pill__nombre">${nombreCorto}</span>
+                    <button id="btn-cerrar-sesion" class="cuenta-pill__salir">${t().authCerrarSesion}</button>
                 `;
                 document.getElementById("btn-cerrar-sesion").addEventListener("click", async () => {
                     await signOut(auth);
@@ -1380,8 +1560,8 @@ function configurarAuthFirebase(modalAuth, btnAbrirAuth) {
             }
         } else {
             usuarioFirebaseActual = null;
-            if (btnAbrirAuth) btnAbrirAuth.style.display = "block";
-            if (authContainer) authContainer.innerHTML = "";
+            if (btnAbrirAuth) btnAbrirAuth.style.display = "inline-flex";
+            if (authContainer) { authContainer.innerHTML = ""; authContainer.classList.remove('cuenta-pill'); }
             usuarioState = { puntos: 0, aciertos: 0, totalJugadas: 0, racha: 0, maxRacha: 0 };
             actualizarMarcadorInterfaz();
         }
