@@ -17,7 +17,7 @@
 <meta property="og:title" content="RefSim — Plataforma de formación arbitral IFAB">
 <meta property="og:description" content="Práctica libre, Examen Oficial cronometrado y estadísticas de progreso para escuelas de árbitros.">
 <meta property="og:locale" content="es_ES">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Ccircle cx='17' cy='17' r='16' fill='%230A1512'/%3E%3Ccircle cx='17' cy='17' r='15.5' stroke='%23F5C518' stroke-width='1.6' fill='none'/%3E%3Cpath d='M17 8 L21 14 L28 15 L23 20 L24.5 27 L17 23.5 L9.5 27 L11 20 L6 15 L13 14 Z' fill='%23F5C518'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -32,10 +32,7 @@
     <!-- ============================================================ -->
     <header class="scorebug">
         <a href="index.html" class="scorebug__brand">
-            <svg class="scorebug__mark" width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <circle cx="17" cy="17" r="15.5" stroke="#F5C518" stroke-width="2"/>
-                <path d="M17 8 L21 14 L28 15 L23 20 L24.5 27 L17 23.5 L9.5 27 L11 20 L6 15 L13 14 Z" fill="#F5C518"/>
-            </svg>
+            <img class="scorebug__mark" src="logo-simbolo.png" alt="RefSim" width="34" height="34">
             <div>
                 <h1>RefSim</h1>
                 <p class="scorebug__tag" data-i18n="tagSimulador">Simulador arbitral · Reglas del Juego IFAB</p>
@@ -108,6 +105,7 @@
     <main style="display:flex; flex-direction:column; gap: var(--gap);">
 
         <section class="hero">
+            <img src="logo-completo.png" alt="RefSim" class="hero__logo">
             <span class="hero__kicker" data-i18n="heroKicker">Plataforma de formación arbitral</span>
             <h1 data-i18n="heroTitulo">Entrena tus decisiones como en la sala VAR</h1>
             <p data-i18n="heroSubtitulo">Casos reales basados en las Reglas del Juego de la IFAB, en Castellano y Euskera, listos para tu escuela de árbitros.</p>
@@ -186,6 +184,7 @@
 
     <!-- PIE DE PÁGINA -->
     <footer class="footer-legal">
+        <img src="logo-mono.png" alt="RefSim" class="footer-legal__logo">
         <p data-i18n="footer">&copy; 2026 RefSim — Basado en las Reglas del Juego de la IFAB.</p>
         <nav class="footer-links">
             <a href="#privacidad" data-i18n="footerPrivacidad" onclick="alert('Política de Privacidad: RefSim utiliza almacenamiento local para guardar tu progreso de juego. No recopilamos datos personales sin tu consentimiento.')">Política de Privacidad</a>
