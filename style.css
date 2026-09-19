@@ -1,9 +1,12 @@
 /* ==========================================================================
    RefSim — Simulador arbitral IFAB
-   Hoja de estilos v2 · identidad "cabina VAR"
+   Hoja de estilos v3 · identidad "cabina VAR" · arquitectura multipágina
    --------------------------------------------------------------------------
+   Compartida por todas las páginas: index.html (Hub), modo-practica.html,
+   modo-examen.html y estadisticas.html.
+
    ÍNDICE
-   01. Tokens (variables)
+   01. Tokens (variables) + temas white-label
    02. Reset y base
    03. Layout general
    04. Scorebug (cabecera)
@@ -16,6 +19,8 @@
    11. Botones de decisión
    12. Feedback
    13. Pie de página
+   13b–13j. Utilidades, tema, breadcrumb, hero, resumen, tarjetas del hub,
+            intro de examen, acta de examen, página de estadísticas
    14. Responsive
    15. Accesibilidad y preferencias
    ========================================================================== */
@@ -108,6 +113,18 @@
     --cesped-b: #24599A;
 }
 
+/* Segundo ejemplo de tema white-label: acento granate/oro. */
+:root[data-tema="granate"] {
+    --amarilla: #D6A24B;
+    --amarilla-clara: #E8C27A;
+    --amarilla-oscura: #A8791F;
+    --verde: #8C1D2B;
+    --verde-claro: #B9394A;
+    --verde-oscuro: #5C1220;
+    --cesped-a: #7A1B2A;
+    --cesped-b: #611521;
+}
+
 /* ==========================================================================
    02. RESET Y BASE
    ========================================================================== */
@@ -196,7 +213,8 @@ input {
 .monitor,
 .panel,
 .ad-slot,
-.auth-card {
+.auth-card,
+.glass-panel {
     background: linear-gradient(165deg, rgba(25, 45, 38, 0.86), rgba(12, 24, 20, 0.92));
     border: 1px solid var(--linea);
     border-radius: var(--radio-m);
@@ -234,6 +252,8 @@ input {
     align-items: center;
     gap: 12px;
     min-width: 0;
+    color: inherit;
+    text-decoration: none;
 }
 
 .scorebug__mark {
@@ -335,6 +355,7 @@ input {
     background: none;
     border: none;
     border-bottom: 2px solid transparent;
+    text-decoration: none;
     cursor: pointer;
     transition: color var(--rapido), border-color var(--rapido);
 }
@@ -557,6 +578,7 @@ input {
 }
 
 .btn-auth {
+    text-decoration: none;
     flex: 1;
     padding: 11px 12px;
     font-weight: 700;
@@ -1467,6 +1489,522 @@ input {
 }
 
 /* ==========================================================================
+   13b. UTILIDADES
+   ========================================================================== */
+.oculto {
+    display: none !important;
+}
+
+/* ==========================================================================
+   13c. SELECTOR DE TEMA (white-label)
+   ========================================================================== */
+.tema-selector {
+    display: flex;
+    gap: 6px;
+    padding: 4px 6px;
+    background: rgba(8, 18, 15, 0.6);
+    border: 1px solid var(--linea);
+    border-radius: var(--radio-pill);
+}
+
+.tema-dot {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform var(--rapido), border-color var(--rapido);
+}
+
+.tema-dot:hover {
+    transform: translateY(-1px) scale(1.06);
+}
+
+.tema-dot.is-activo {
+    border-color: var(--papel);
+}
+
+.tema-dot--clasico   { background: linear-gradient(135deg, #F5C518, #2E9B5E); }
+.tema-dot--atlantico { background: linear-gradient(135deg, #FFB238, #2E7FD6); }
+.tema-dot--granate   { background: linear-gradient(135deg, #D6A24B, #8C1D2B); }
+
+/* ==========================================================================
+   13d. BREADCRUMB Y CABECERA DE PÁGINA INTERIOR
+   ========================================================================== */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--tenue);
+}
+
+.breadcrumb a {
+    color: var(--tenue);
+    text-decoration: none;
+    transition: color var(--rapido);
+}
+
+.breadcrumb a:hover {
+    color: var(--amarilla);
+}
+
+.breadcrumb__actual {
+    color: var(--papel);
+    font-weight: 600;
+}
+
+.page-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 2px;
+}
+
+.page-heading h2 {
+    font-family: var(--fuente-display);
+    font-weight: 800;
+    font-size: clamp(1.5rem, 1.1rem + 1.4vw, 1.9rem);
+}
+
+.page-heading p {
+    color: var(--tenue);
+    font-size: 0.9rem;
+    max-width: 62ch;
+}
+
+/* ==========================================================================
+   13e. HERO DEL MENÚ PRINCIPAL
+   ========================================================================== */
+.hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 44px 32px;
+    overflow: hidden;
+    background:
+        radial-gradient(120% 140% at 100% 0%, rgba(245, 197, 24, 0.14), transparent 55%),
+        linear-gradient(165deg, rgba(25, 45, 38, 0.92), rgba(10, 21, 18, 0.96));
+    border: 1px solid var(--linea);
+    border-radius: var(--radio-l);
+    box-shadow: var(--sombra);
+}
+
+.hero__kicker {
+    display: inline-flex;
+    align-self: flex-start;
+    padding: 5px 13px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: var(--amarilla);
+    background: rgba(245, 197, 24, 0.14);
+    border: 1px solid rgba(245, 197, 24, 0.4);
+    border-radius: var(--radio-pill);
+    text-transform: uppercase;
+}
+
+.hero h1 {
+    font-family: var(--fuente-display);
+    font-weight: 800;
+    font-size: clamp(1.9rem, 1.4rem + 2.2vw, 2.9rem);
+    line-height: 1.05;
+    max-width: 18ch;
+}
+
+.hero p {
+    color: var(--tenue);
+    font-size: 1rem;
+    max-width: 56ch;
+}
+
+.hero__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.btn-hero-primario,
+.btn-hero-secundario {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 22px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    border-radius: var(--radio-pill);
+    text-decoration: none;
+    transition: transform var(--rapido), filter var(--rapido), box-shadow var(--rapido);
+}
+
+.btn-hero-primario {
+    color: var(--noche);
+    background: linear-gradient(180deg, var(--amarilla-clara), var(--amarilla));
+    box-shadow: var(--brillo-amarillo);
+}
+
+.btn-hero-secundario {
+    color: var(--papel);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--linea-fuerte);
+}
+
+.btn-hero-primario:hover,
+.btn-hero-secundario:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+}
+
+/* ==========================================================================
+   13f. RESUMEN DE PROGRESO (mini panel de estadísticas)
+   ========================================================================== */
+.resumen-progreso {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gap);
+}
+
+.resumen-progreso .stat-card {
+    padding: 16px 18px;
+    text-align: center;
+}
+
+.resumen-progreso .stat-card dt {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    color: var(--tenue-oscuro);
+    margin-bottom: 6px;
+}
+
+.resumen-progreso .stat-card dd {
+    font-family: var(--fuente-display);
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--amarilla);
+}
+
+.resumen-progreso .stat-card:nth-child(3) dd {
+    color: var(--verde-claro);
+}
+
+.aviso-invitado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px 18px;
+    font-size: 0.85rem;
+    color: var(--tenue);
+    background: rgba(245, 197, 24, 0.08);
+    border: 1px solid rgba(245, 197, 24, 0.3);
+    border-radius: var(--radio-m);
+}
+
+.aviso-invitado a,
+.aviso-invitado button {
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   13g. TARJETAS DE MODO — versión enlace grande (hub)
+   ========================================================================== */
+.modecards--hub {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gap);
+}
+
+.modecard-link {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 26px 24px;
+    text-align: left;
+    text-decoration: none;
+    color: var(--papel);
+    overflow: hidden;
+    transition: transform var(--medio), border-color var(--rapido), box-shadow var(--medio);
+}
+
+.modecard-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, rgba(245, 197, 24, 0.10), transparent 60%);
+    opacity: 0;
+    transition: opacity var(--medio);
+}
+
+.modecard-link:hover {
+    transform: translateY(-3px);
+    border-color: var(--linea-fuerte);
+    box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.9);
+}
+
+.modecard-link:hover::after {
+    opacity: 1;
+}
+
+.modecard-link__icono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radio-m);
+    background: rgba(245, 197, 24, 0.14);
+    color: var(--amarilla);
+}
+
+.modecard-link__icono--verde  { background: rgba(46, 155, 94, 0.16); color: var(--verde-claro); }
+.modecard-link__icono--ambar  { background: rgba(245, 197, 24, 0.16); color: var(--amarilla); }
+.modecard-link__icono--tenue  { background: rgba(147, 167, 158, 0.14); color: var(--tenue); }
+
+.modecard-link strong {
+    font-family: var(--fuente-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.modecard-link p {
+    color: var(--tenue);
+    font-size: 0.86rem;
+    line-height: 1.4;
+}
+
+.modecard-link__cta {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--amarilla-clara);
+}
+
+/* ==========================================================================
+   13h. INTRODUCCIÓN DE EXAMEN
+   ========================================================================== */
+.examen-intro {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 30px 28px;
+}
+
+.examen-intro ul {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 2px;
+    list-style: none;
+}
+
+.examen-intro li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: var(--tenue);
+    font-size: 0.92rem;
+}
+
+.examen-intro li::before {
+    content: "";
+    flex-shrink: 0;
+    width: 7px;
+    height: 7px;
+    margin-top: 7px;
+    border-radius: 50%;
+    background: var(--amarilla);
+}
+
+/* ==========================================================================
+   13i. ACTA DE EXAMEN Y HISTORIAL (compartido examen / estadísticas)
+   ========================================================================== */
+.acta {
+    padding: 22px;
+    background: rgba(10, 21, 18, 0.95);
+    border: 1px solid var(--amarilla);
+    border-radius: var(--radio-m);
+}
+
+.acta__titulo {
+    font-family: var(--fuente-display);
+    font-size: 1.5rem;
+    color: var(--amarilla);
+    margin-bottom: 6px;
+}
+
+.acta__linea {
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+.acta__linea--tenue {
+    color: var(--tenue);
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+}
+
+.acta__subtitulo {
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    color: var(--amarilla-clara);
+}
+
+.acta__lista {
+    max-height: 320px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 4px;
+}
+
+.acta__item {
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 3px solid var(--tenue-oscuro);
+    border-radius: 4px;
+    font-size: 0.84rem;
+}
+
+.acta__item--ok   { border-left-color: var(--verde-claro); }
+.acta__item--fail { border-left-color: var(--roja); }
+
+.acta__item-titulo { margin-bottom: 3px; }
+
+.acta__item-detalle {
+    color: var(--tenue);
+    font-size: 0.8rem;
+}
+
+.acta__item-explicacion {
+    color: var(--tenue-oscuro);
+    font-size: 0.78rem;
+    margin-top: 3px;
+}
+
+.acta__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.acta__acciones > * {
+    flex: 1;
+    min-width: 180px;
+    text-align: center;
+}
+
+.acta__link-historial {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+/* ==========================================================================
+   13j. PÁGINA "MIS PARTIDOS"
+   ========================================================================== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+
+.stats-grid .stat-card {
+    padding: 16px 14px;
+    text-align: center;
+}
+
+.stats-grid .stat-card dt {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: var(--tenue-oscuro);
+    margin-bottom: 6px;
+}
+
+.stats-grid .stat-card dd {
+    font-family: var(--fuente-display);
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--amarilla);
+}
+
+.login-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 20px 22px;
+}
+
+.login-cta__texto h3 {
+    font-family: var(--fuente-display);
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+}
+
+.login-cta__texto p {
+    color: var(--tenue);
+    font-size: 0.85rem;
+    max-width: 52ch;
+}
+
+.hist-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.hist-item {
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--linea);
+    border-left: 3px solid var(--tenue-oscuro);
+    border-radius: var(--radio-s);
+}
+
+.hist-item--ok   { border-left-color: var(--verde-claro); }
+.hist-item--fail { border-left-color: var(--roja); }
+
+.hist-item__cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    gap: 10px;
+}
+
+.hist-item__nota {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--verde-claro);
+}
+
+.hist-item__meta {
+    color: var(--tenue);
+    font-size: 0.78rem;
+}
+
+.hist-vacio {
+    color: var(--tenue);
+    text-align: center;
+    font-size: 0.9rem;
+    padding: 26px 10px;
+}
+
+/* ==========================================================================
    14. RESPONSIVE
    ========================================================================== */
 @media (max-width: 900px) {
@@ -1480,6 +2018,22 @@ input {
 
     .modecards {
         grid-template-columns: 1fr;
+    }
+
+    .modecards--hub {
+        grid-template-columns: 1fr;
+    }
+
+    .resumen-progreso {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .hero {
+        padding: 32px 24px;
     }
 }
 
@@ -1554,11 +2108,54 @@ input {
         width: 34px;
         height: 34px;
     }
+
+    .hero {
+        padding: 26px 18px;
+        border-radius: var(--radio-m);
+    }
+
+    .hero__acciones {
+        flex-direction: column;
+    }
+
+    .btn-hero-primario,
+    .btn-hero-secundario {
+        justify-content: center;
+    }
+
+    .resumen-progreso {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .acta__acciones {
+        flex-direction: column;
+    }
+
+    .acta__acciones > * {
+        min-width: 0;
+    }
+
+    .login-cta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
 @media (max-width: 420px) {
     .decisions {
         grid-template-columns: 1fr;
+    }
+
+    .resumen-progreso {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
     }
 }
 

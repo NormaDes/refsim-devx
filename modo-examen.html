@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Examen Oficial — RefSim</title>
+<meta name="description" content="Simulacro de examen arbitral oficial: 25 jugadas cronometradas basadas en las Reglas del Juego de la IFAB.">
+<meta name="theme-color" content="#070E0C">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Ccircle cx='17' cy='17' r='16' fill='%230A1512'/%3E%3Ccircle cx='17' cy='17' r='15.5' stroke='%23F5C518' stroke-width='1.6' fill='none'/%3E%3Cpath d='M17 8 L21 14 L28 15 L23 20 L24.5 27 L17 23.5 L9.5 27 L11 20 L6 15 L13 14 Z' fill='%23F5C518'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6712707302498032" crossorigin="anonymous"></script>
+</head>
+<body data-pagina="examen">
+
+<div class="broadcast">
+
+    <!-- ============================================================ -->
+    <!-- CABECERA (idéntica en todas las páginas)                      -->
+    <!-- ============================================================ -->
+    <header class="scorebug">
+        <a href="index.html" class="scorebug__brand">
+            <svg class="scorebug__mark" width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="17" cy="17" r="15.5" stroke="#F5C518" stroke-width="2"/>
+                <path d="M17 8 L21 14 L28 15 L23 20 L24.5 27 L17 23.5 L9.5 27 L11 20 L6 15 L13 14 Z" fill="#F5C518"/>
+            </svg>
+            <div>
+                <h1>RefSim</h1>
+                <p class="scorebug__tag" data-i18n="tagSimulador">Simulador arbitral · Reglas del Juego IFAB</p>
+            </div>
+        </a>
+
+        <nav class="scorebug__nav" aria-label="Navegación principal">
+            <a href="index.html" class="navlink" data-nav="inicio">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 11.5L12 4l8 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10.5V20h12v-9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span data-i18n="navInicio">Inicio</span>
+            </a>
+            <a href="modo-practica.html" class="navlink" data-nav="practica">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span data-i18n="navPractica">Práctica</span>
+            </a>
+            <a href="modo-examen.html" class="navlink" data-nav="examen">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2" stroke="currentColor" stroke-width="2"/><path d="M9 3.5h6v2H9z" fill="currentColor"/><path d="M8.5 12.5l2 2 4-4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span data-i18n="navExamen">Examen</span>
+            </a>
+            <a href="estadisticas.html" class="navlink" data-nav="estadisticas">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <span data-i18n="navEstadisticas">Estadísticas</span>
+            </a>
+        </nav>
+
+        <div class="scorebug__controles">
+            <div class="idioma" id="selector-idioma" role="group" aria-label="Idioma">
+                <button type="button" data-lang="es" aria-pressed="false" title="Castellano">🇪🇸</button>
+                <button type="button" data-lang="eu" aria-pressed="false" title="Euskera">🟢🔴</button>
+            </div>
+
+            <div class="tema-selector" id="selector-tema" role="group" aria-label="Tema visual / marca blanca">
+                <button type="button" data-tema="clasico" class="tema-dot tema-dot--clasico" aria-pressed="false" title="Clásico"></button>
+                <button type="button" data-tema="atlantico" class="tema-dot tema-dot--atlantico" aria-pressed="false" title="Atlántico"></button>
+                <button type="button" data-tema="granate" class="tema-dot tema-dot--granate" aria-pressed="false" title="Granate"></button>
+            </div>
+
+            <span id="reloj-examen" class="modecard__reloj" style="display:none;">⏱️ 00:00</span>
+
+            <button type="button" id="btn-abrir-auth" class="btn-acceso">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.6" stroke="currentColor" stroke-width="2"/><path d="M4.5 20c1.4-4 4.2-6 7.5-6s6.1 2 7.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <span data-i18n="btnAcceso">Acceso</span>
+            </button>
+
+            <div id="auth-container-ui"></div>
+        </div>
+    </header>
+
+    <!-- MODAL DE AUTENTICACIÓN -->
+    <div id="auth-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="auth-titulo">
+        <div class="auth-card">
+            <button type="button" id="btn-cerrar-auth" class="auth-card__cerrar" aria-label="Cerrar">&times;</button>
+            <h3 id="auth-titulo" data-i18n="authTitulo">Acceso a RefSim</h3>
+            <p class="auth-card__intro" data-i18n="authIntro">Entra para guardar tus puntos y tu racha en cualquier dispositivo.</p>
+            <input type="email" id="user-email" class="campo-texto" autocomplete="email" data-i18n-placeholder="authEmail" placeholder="Correo electrónico">
+            <input type="password" id="user-password" class="campo-texto" autocomplete="current-password" data-i18n-placeholder="authPassword" placeholder="Contraseña">
+            <div class="auth-card__acciones">
+                <button type="button" id="btn-login" class="btn-auth btn-auth--primario" data-i18n="authLogin">Iniciar sesión</button>
+                <button type="button" id="btn-register" class="btn-auth btn-auth--secundario" data-i18n="authRegister">Crear cuenta</button>
+            </div>
+            <p id="auth-status" aria-live="polite"></p>
+        </div>
+    </div>
+
+    <!-- BREADCRUMB -->
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+        <a href="index.html" data-i18n="breadcrumbInicio">Inicio</a>
+        <span aria-hidden="true">/</span>
+        <span class="breadcrumb__actual" data-i18n="navExamen">Examen</span>
+    </nav>
+
+    <main style="display:flex; flex-direction:column; gap: var(--gap);">
+
+        <!-- INTRODUCCIÓN AL EXAMEN -->
+        <section id="examen-intro" class="examen-intro glass-panel">
+            <div class="page-heading">
+                <h2 data-i18n="examenIntroTitulo">Examen Oficial · 25 jugadas</h2>
+                <p data-i18n="examenIntroDesc">Un simulacro de examen real: 25 jugadas aleatorias sin repetición, cronómetro en marcha y sin pistas intermedias. Al terminar recibirás tu acta con la revisión completa.</p>
+            </div>
+            <ul>
+                <li data-i18n="examenRegla1">25 jugadas seleccionadas al azar del banco IFAB, sin repetir.</li>
+                <li data-i18n="examenRegla2">No hay feedback tras cada jugada: lo verás todo en el acta final.</li>
+                <li data-i18n="examenRegla3">El cronómetro corre durante todo el examen.</li>
+                <li data-i18n="examenRegla4">Tu resultado se guarda en «Mis Partidos» si has iniciado sesión.</li>
+            </ul>
+            <button type="button" id="btn-comenzar-examen" class="btn-hero-primario" style="align-self:flex-start; border:none; cursor:pointer;" data-i18n="btnComenzarExamen">Comenzar examen</button>
+        </section>
+
+        <!-- ÁREA DE JUEGO (oculta hasta pulsar "Comenzar examen") -->
+        <section id="examen-juego" class="review oculto">
+
+            <section class="monitor" aria-label="Repetición de la jugada">
+                <span class="hud-esquina hud-esquina--tl" aria-hidden="true"></span>
+                <span class="hud-esquina hud-esquina--tr" aria-hidden="true"></span>
+                <span class="hud-esquina hud-esquina--bl" aria-hidden="true"></span>
+                <span class="hud-esquina hud-esquina--br" aria-hidden="true"></span>
+
+                <div class="monitor__bar">
+                    <span class="monitor__badge">
+                        <span class="monitor__dot" aria-hidden="true"></span>
+                        <span>VAR · Repetición de la jugada</span>
+                    </span>
+                    <span class="monitor__nav">
+                        <span id="situacion-id" class="monitor__pill">Jugada</span>
+                    </span>
+                </div>
+
+                <div id="campo" class="pitch">
+                    <div class="pitch__line pitch__line--borde"></div>
+                    <div class="pitch__line pitch__area-izq"></div>
+                    <div class="pitch__line pitch__area-chica-izq"></div>
+                    <div class="pitch__line pitch__centro"></div>
+                    <div class="pitch__circulo"></div>
+                    <div class="pitch__line pitch__area-der"></div>
+                    <div class="pitch__line pitch__area-chica-der"></div>
+                </div>
+
+                <div class="playbar">
+                    <button type="button" class="playbar__play" id="btn-play-decorativo" aria-label="Reproducir">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8V4z"/></svg>
+                    </button>
+                    <span class="playbar__tiempo">00:08 / 00:15</span>
+                    <div class="playbar__barra" aria-hidden="true">
+                        <div class="playbar__progreso"></div>
+                        <div class="playbar__thumb"></div>
+                    </div>
+                    <button type="button" class="playbar__chip" id="btn-fullscreen-monitor" aria-label="Pantalla completa">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <span class="playbar__chip playbar__chip--hd">HD</span>
+                </div>
+
+                <div class="monitor__meta">
+                    <div class="meta__item">
+                        <span class="meta__icono" aria-hidden="true">⏱️</span>
+                        <div>
+                            <span class="meta__label" data-i18n="metaMinuto">Minuto</span>
+                            <span class="meta__valor" id="meta-minuto">—</span>
+                        </div>
+                    </div>
+                    <div class="meta__item">
+                        <span class="meta__icono" aria-hidden="true">📍</span>
+                        <div>
+                            <span class="meta__label" data-i18n="metaZona">Zona de la jugada</span>
+                            <span class="meta__valor" id="meta-zona">—</span>
+                        </div>
+                    </div>
+                    <div class="meta__item">
+                        <span class="meta__icono" aria-hidden="true">🛡️</span>
+                        <div>
+                            <span class="meta__label" data-i18n="metaContexto">Contexto</span>
+                            <span class="meta__valor" id="meta-contexto">—</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="situation">
+                    <span class="situation__id" id="situacion-id-panel">Jugada</span>
+                    <h2 id="situacion-titulo">Cargando situación…</h2>
+                    <p id="situacion-descripcion">Un momento, el árbitro revisa la jugada…</p>
+                </div>
+
+                <div class="decisions" role="group" aria-label="Elige tu decisión arbitral">
+                    <button class="decision decision--clean btn-opcion" data-decision="No hay falta">
+                        <span class="decision__glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12.5L10 17.5L19 6.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                        <span class="decision__texto">
+                            <span class="decision__titulo">No hay falta</span>
+                            <span class="decision__desc">El contacto es legal, no es motivo de sanción.</span>
+                        </span>
+                        <span class="decision__tecla" aria-hidden="true">1</span>
+                    </button>
+                    <button class="decision decision--foul btn-opcion" data-decision="Falta">
+                        <span class="decision__glyph" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2"/><path d="M12 7v6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="16.3" r="1.15" fill="currentColor"/></svg></span>
+                        <span class="decision__texto">
+                            <span class="decision__titulo">Falta</span>
+                            <span class="decision__desc">Infracción sancionable con tiro libre directo.</span>
+                        </span>
+                        <span class="decision__tecla" aria-hidden="true">2</span>
+                    </button>
+                    <button class="decision decision--yellow btn-opcion" data-decision="Falta + Tarjeta Amarilla">
+                        <span class="decision__card" aria-hidden="true"></span>
+                        <span class="decision__texto">
+                            <span class="decision__titulo">Falta + Amarilla</span>
+                            <span class="decision__desc">Es una falta imprudente o táctica.</span>
+                        </span>
+                        <span class="decision__tecla" aria-hidden="true">3</span>
+                    </button>
+                    <button class="decision decision--red btn-opcion" data-decision="Falta + Tarjeta Roja">
+                        <span class="decision__card" aria-hidden="true"></span>
+                        <span class="decision__texto">
+                            <span class="decision__titulo">Falta + Roja</span>
+                            <span class="decision__desc">Juego brusco grave o fuerza excesiva.</span>
+                        </span>
+                        <span class="decision__tecla" aria-hidden="true">4</span>
+                    </button>
+                    <button class="decision decision--penalty btn-opcion" data-decision="Penalti">
+                        <span class="decision__card" aria-hidden="true" style="background:var(--papel)"></span>
+                        <span class="decision__texto">
+                            <span class="decision__titulo">Penalti</span>
+                            <span class="decision__desc">Infracción dentro del área que impide el juego.</span>
+                        </span>
+                        <span class="decision__tecla" aria-hidden="true">5</span>
+                    </button>
+                    <button class="decision decision--penalty-yellow btn-opcion" data-decision="Penalti + Tarjeta Amarilla">
+                        <span class="decision__card" aria-hidden="true" style="background:var(--amarilla)"></span>
+                        <span class="decision__texto">
+                            <span class="decision__titulo">Penalti + Amarilla</span>
+                            <span class="decision__desc">Infracción imprudente cometida en el área.</span>
+                        </span>
+                        <span class="decision__tecla" aria-hidden="true">6</span>
+                    </button>
+                    <button class="decision decision--goal btn-opcion" data-decision="Gol">
+                        <span class="decision__glyph" aria-hidden="true">⚽</span>
+                        <span class="decision__texto">
+                            <span class="decision__titulo">Gol</span>
+                            <span class="decision__desc">El balón cruzó la línea de meta reglamentariamente.</span>
+                        </span>
+                        <span class="decision__tecla" aria-hidden="true">7</span>
+                    </button>
+                    <button class="decision decision--offside btn-opcion" data-decision="Fuera de juego">
+                        <span class="decision__glyph" aria-hidden="true">🚩</span>
+                        <span class="decision__texto">
+                            <span class="decision__titulo">Fuera de juego</span>
+                            <span class="decision__desc">Posición antirreglamentaria al recibir el balón.</span>
+                        </span>
+                        <span class="decision__tecla" aria-hidden="true">8</span>
+                    </button>
+                </div>
+            </section>
+        </section>
+
+        <!-- RESULTADOS FINALES (acta) -->
+        <div id="examen-resultados-host" class="oculto"></div>
+
+    </main>
+
+    <!-- PUBLICIDAD -->
+    <div class="ad-slot ad-slot--rectangle">
+        <span class="ad-slot__label" data-i18n="adLabel">Publicidad</span>
+        <div class="ad-slot__unit">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6712707302498032" data-ad-slot="7857499167" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="footer-legal">
+        <p data-i18n="footer">&copy; 2026 RefSim — Basado en las Reglas del Juego de la IFAB.</p>
+        <nav class="footer-links">
+            <a href="#privacidad" data-i18n="footerPrivacidad" onclick="alert('Política de Privacidad: RefSim utiliza almacenamiento local para guardar tu progreso de juego. No recopilamos datos personales sin tu consentimiento.')">Política de Privacidad</a>
+            <span aria-hidden="true">·</span>
+            <a href="#contacto" data-i18n="footerContacto" onclick="alert('Contacto: Para consultas o sugerencias escribe a soporte@refsim.com')">Contacto</a>
+        </nav>
+    </footer>
+
+</div>
+
+<script type="module" src="firebase-init.js"></script>
+<script src="common.js"></script>
+<script src="game-data.js"></script>
+<script>window.REFSIM_MODO = "examen";</script>
+<script src="game.js"></script>
+</body>
+</html>

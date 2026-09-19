@@ -1,29 +1,18 @@
 <!DOCTYPE html>
-<!--
-  Identidad blanca: para vestir RefSim con otra federación, añade
-  data-tema="atlantico" o data-tema="granate" (o el nombre de un nuevo
-  bloque de tema que definas en style.css §01b) a esta etiqueta <html>.
-  El selector de tema del propio menú hace esto mismo en tiempo real.
--->
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RefSim — Menú Principal · Simulador Arbitral IFAB</title>
-<meta name="description" content="RefSim: plataforma de formación arbitral para escuelas de árbitros, basada en las Reglas del Juego de la IFAB. Práctica, Examen Oficial y estadísticas en Castellano y Euskera.">
+<title>Mis Partidos — RefSim</title>
+<meta name="description" content="Consulta tu historial de exámenes oficiales, tu precisión y tu evolución como árbitro en RefSim.">
 <meta name="theme-color" content="#070E0C">
-<link rel="canonical" href="https://tudominio.com/">
-<meta property="og:type" content="website">
-<meta property="og:title" content="RefSim — Plataforma de formación arbitral IFAB">
-<meta property="og:description" content="Práctica libre, Examen Oficial cronometrado y estadísticas de progreso para escuelas de árbitros.">
-<meta property="og:locale" content="es_ES">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Ccircle cx='17' cy='17' r='16' fill='%230A1512'/%3E%3Ccircle cx='17' cy='17' r='15.5' stroke='%23F5C518' stroke-width='1.6' fill='none'/%3E%3Cpath d='M17 8 L21 14 L28 15 L23 20 L24.5 27 L17 23.5 L9.5 27 L11 20 L6 15 L13 14 Z' fill='%23F5C518'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
-<body data-pagina="inicio">
+<body data-pagina="estadisticas">
 
 <div class="broadcast">
 
@@ -73,7 +62,7 @@
                 <button type="button" data-tema="granate" class="tema-dot tema-dot--granate" aria-pressed="false" title="Granate"></button>
             </div>
 
-            <button type="button" id="btn-abrir-auth" class="btn-acceso" title="Acceso federado / marca blanca — inicia sesión para guardar tu progreso">
+            <button type="button" id="btn-abrir-auth" class="btn-acceso">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.6" stroke="currentColor" stroke-width="2"/><path d="M4.5 20c1.4-4 4.2-6 7.5-6s6.1 2 7.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 <span data-i18n="btnAcceso">Acceso</span>
             </button>
@@ -82,107 +71,80 @@
         </div>
     </header>
 
-    <!-- MODAL DE AUTENTICACIÓN (idéntico en todas las páginas) -->
+    <!-- MODAL DE AUTENTICACIÓN -->
     <div id="auth-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="auth-titulo">
         <div class="auth-card">
             <button type="button" id="btn-cerrar-auth" class="auth-card__cerrar" aria-label="Cerrar">&times;</button>
             <h3 id="auth-titulo" data-i18n="authTitulo">Acceso a RefSim</h3>
             <p class="auth-card__intro" data-i18n="authIntro">Entra para guardar tus puntos y tu racha en cualquier dispositivo.</p>
-
             <input type="email" id="user-email" class="campo-texto" autocomplete="email" data-i18n-placeholder="authEmail" placeholder="Correo electrónico">
             <input type="password" id="user-password" class="campo-texto" autocomplete="current-password" data-i18n-placeholder="authPassword" placeholder="Contraseña">
-
             <div class="auth-card__acciones">
                 <button type="button" id="btn-login" class="btn-auth btn-auth--primario" data-i18n="authLogin">Iniciar sesión</button>
                 <button type="button" id="btn-register" class="btn-auth btn-auth--secundario" data-i18n="authRegister">Crear cuenta</button>
             </div>
-
             <p id="auth-status" aria-live="polite"></p>
-            <p style="color:var(--tenue-oscuro); font-size:0.75rem; margin-top:10px;" data-i18n="authFederado">Acceso federado / marca blanca disponible para escuelas de árbitros. Contacta con soporte para integrarlo con tu propio dominio.</p>
         </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- HERO                                                          -->
-    <!-- ============================================================ -->
+    <!-- BREADCRUMB -->
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+        <a href="index.html" data-i18n="breadcrumbInicio">Inicio</a>
+        <span aria-hidden="true">/</span>
+        <span class="breadcrumb__actual" data-i18n="navEstadisticas">Estadísticas</span>
+    </nav>
+
     <main style="display:flex; flex-direction:column; gap: var(--gap);">
 
-        <section class="hero">
-            <span class="hero__kicker" data-i18n="heroKicker">Plataforma de formación arbitral</span>
-            <h1 data-i18n="heroTitulo">Entrena tus decisiones como en la sala VAR</h1>
-            <p data-i18n="heroSubtitulo">Casos reales basados en las Reglas del Juego de la IFAB, en Castellano y Euskera, listos para tu escuela de árbitros.</p>
-            <div class="hero__acciones">
-                <a href="modo-practica.html" class="btn-hero-primario" data-i18n="heroCtaPrincipal">Empezar práctica rápida</a>
-                <a href="modo-examen.html" class="btn-hero-secundario" data-i18n="heroCtaSecundaria">Ver Examen Oficial</a>
+        <div class="page-heading">
+            <h2 data-i18n="statsTitulo">Mis Partidos</h2>
+            <p data-i18n="statsSubtitulo">Tu evolución como árbitro, jugada a jugada.</p>
+        </div>
+
+        <!-- CTA DE LOGIN PARA INVITADOS -->
+        <div id="caja-login-cta" class="login-cta glass-panel">
+            <div class="login-cta__texto">
+                <h3 data-i18n="statsLoginCtaTitulo">Inicia sesión para no perder tu progreso</h3>
+                <p data-i18n="statsLoginCtaDesc">Como invitado tus estadísticas solo se guardan en este dispositivo. Crea una cuenta gratuita para sincronizarlas en la nube.</p>
             </div>
-        </section>
+            <button type="button" class="btn-hero-primario" style="border:none; cursor:pointer;" onclick="document.getElementById('auth-modal').style.display='flex'">
+                <span data-i18n="statsLoginCtaBtn">Iniciar sesión / Crear cuenta</span>
+            </button>
+        </div>
 
-        <!-- RESUMEN DE PROGRESO -->
-        <section aria-label="Tu progreso">
-            <div class="resumen-progreso">
-                <dl class="stat-card glass-panel">
-                    <dt data-i18n="resumenPuntos">Puntos totales</dt>
-                    <dd id="resumen-puntos">0</dd>
-                </dl>
-                <dl class="stat-card glass-panel">
-                    <dt data-i18n="resumenPrecision">Precisión global</dt>
-                    <dd id="resumen-precision">0%</dd>
-                </dl>
-                <dl class="stat-card glass-panel">
-                    <dt data-i18n="resumenRacha">Racha actual</dt>
-                    <dd id="resumen-racha">0</dd>
-                </dl>
+        <!-- RESUMEN NUMÉRICO -->
+        <div class="stats-grid">
+            <dl class="stat-card glass-panel">
+                <dt data-i18n="statsPuntosTotales">Puntos totales</dt>
+                <dd id="resumen-puntos">0</dd>
+            </dl>
+            <dl class="stat-card glass-panel">
+                <dt data-i18n="statsPrecisionGlobal">Precisión global</dt>
+                <dd id="resumen-precision">0%</dd>
+            </dl>
+            <dl class="stat-card glass-panel">
+                <dt data-i18n="statsRachaActual">Racha actual</dt>
+                <dd id="resumen-racha">0</dd>
+            </dl>
+            <dl class="stat-card glass-panel">
+                <dt data-i18n="statsMejorRacha">Mejor racha</dt>
+                <dd id="resumen-max-racha">0</dd>
+            </dl>
+            <dl class="stat-card glass-panel">
+                <dt data-i18n="statsExamenesRealizados">Exámenes realizados</dt>
+                <dd id="resumen-examenes">0</dd>
+            </dl>
+        </div>
+
+        <!-- HISTORIAL DE EXÁMENES -->
+        <section class="panel" style="padding: 22px;">
+            <h3 style="font-family: var(--fuente-display); font-size: 1.15rem; margin-bottom: 14px;" data-i18n="statsHistorialTitulo">Historial de exámenes</h3>
+            <div id="contenido-lista-historial" class="hist-lista">
+                <p class="hist-vacio" data-i18n="statsCargando">Cargando tus exámenes…</p>
             </div>
-            <div id="aviso-invitado" class="aviso-invitado" style="margin-top: 10px;">
-                <span data-i18n="resumenInvitado">Estás jugando como invitado. Inicia sesión para guardar tu progreso en la nube.</span>
-                <button type="button" class="btn-acceso" onclick="document.getElementById('auth-modal').style.display='flex'">
-                    <span data-i18n="btnAcceso">Acceso</span>
-                </button>
-            </div>
-        </section>
-
-        <!-- ============================================================ -->
-        <!-- TARJETAS DE MODO                                              -->
-        <!-- ============================================================ -->
-        <section class="modecards--hub" aria-label="Elegir modo de entrenamiento">
-            <a href="modo-practica.html" class="modecard-link glass-panel">
-                <span class="modecard-link__icono modecard-link__icono--verde" aria-hidden="true">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/></svg>
-                </span>
-                <strong data-i18n="modoPracticaTitulo">Práctica Rápida</strong>
-                <p data-i18n="modoPracticaDesc">Jugadas aleatorias, feedback inmediato y explicación reglamentaria tras cada decisión.</p>
-                <span class="modecard-link__cta"><span data-i18n="modoEmpezar">Empezar</span> →</span>
-            </a>
-
-            <a href="modo-examen.html" class="modecard-link glass-panel">
-                <span class="modecard-link__icono modecard-link__icono--ambar" aria-hidden="true">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="5" y="4" width="14" height="17" rx="2" stroke="currentColor" stroke-width="2"/><path d="M9 3.5h6v2H9z" fill="currentColor"/><path d="M8.5 12.5l2 2 4-4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </span>
-                <strong data-i18n="modoExamenTitulo">Examen Oficial (25)</strong>
-                <p data-i18n="modoExamenDesc">Simulacro cronometrado de 25 jugadas sin repetición, con acta final descargable en pantalla.</p>
-                <span class="modecard-link__cta"><span data-i18n="modoEmpezar">Empezar</span> →</span>
-            </a>
-
-            <a href="estadisticas.html" class="modecard-link glass-panel">
-                <span class="modecard-link__icono modecard-link__icono--tenue" aria-hidden="true">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 20V10M12 20V4M19 20v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                </span>
-                <strong data-i18n="modoEstadisticasTitulo">Mis Partidos</strong>
-                <p data-i18n="modoEstadisticasDesc">Consulta tu historial de exámenes, tu precisión y tu evolución como árbitro.</p>
-                <span class="modecard-link__cta"><span data-i18n="modoVer">Ver</span> →</span>
-            </a>
         </section>
 
     </main>
-
-    <!-- TICKER INFERIOR -->
-    <div class="ticker">
-        <span class="ticker__msg">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 10v4h4l5 4V6l-5 4H3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M16.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            <span data-i18n="tickerMsg">Sigue entrenando. Cada decisión cuenta.</span>
-        </span>
-        <span class="ticker__marca">RefSim · Arbitraje simulagial</span>
-    </div>
 
     <!-- PIE DE PÁGINA -->
     <footer class="footer-legal">
@@ -198,6 +160,6 @@
 
 <script type="module" src="firebase-init.js"></script>
 <script src="common.js"></script>
-<script src="hub.js"></script>
+<script src="estadisticas.js"></script>
 </body>
 </html>
