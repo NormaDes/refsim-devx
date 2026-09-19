@@ -1469,11 +1469,24 @@ input {
     color: var(--tenue-oscuro);
 }
 
+.footer-legal__marca {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-family: var(--fuente-display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.2px;
+    color: var(--tenue);
+}
+
 .footer-legal__logo {
-    width: 76px;
-    height: auto;
-    margin: 0 auto 12px;
-    opacity: 0.82;
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    flex-shrink: 0;
+    opacity: 0.92;
 }
 
 .footer-links {
@@ -1597,13 +1610,6 @@ input {
     border: 1px solid var(--linea);
     border-radius: var(--radio-l);
     box-shadow: var(--sombra);
-}
-
-.hero__logo {
-    width: 128px;
-    height: auto;
-    margin-bottom: 4px;
-    filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.45));
 }
 
 .hero__kicker {
@@ -2126,10 +2132,6 @@ input {
     .hero {
         padding: 26px 18px;
         border-radius: var(--radio-m);
-    }
-
-    .hero__logo {
-        width: 96px;
     }
 
     .hero__acciones {
